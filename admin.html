@@ -116,8 +116,20 @@
                 }
             } catch (err) { 
                 console.error("Auth error:", err);
-                setStatus("Gagal Autentikasi", "text-red-500");
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-red-500 font-bold">Error: ${err.message}</td></tr>`;
+                if (err.code === 'auth/admin-restricted-operation') {
+                    setStatus("Fitur Anonim Nonaktif", "text-red-500");
+                    document.getElementById('tableBody').innerHTML = `
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-red-500">
+                                <p class="font-bold">Akses Ditolak!</p>
+                                <p class="text-xs mt-2">Anda harus mengaktifkan <strong>Anonymous Sign-in</strong> di Firebase Console.</p>
+                                <p class="text-[10px] mt-1 italic">(Authentication > Sign-in method > Add new provider > Anonymous > Enable)</p>
+                            </td>
+                        </tr>`;
+                } else {
+                    setStatus("Gagal Autentikasi", "text-red-500");
+                    document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-red-500 font-bold">Error: ${err.message}</td></tr>`;
+                }
             }
         };
 
