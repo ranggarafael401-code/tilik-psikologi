@@ -19,7 +19,7 @@
 </head>
 <body class="min-h-screen">
 
-    <!-- Main Content (Terbuka secara default) -->
+    <!-- Main Content (Terbuka secara default tanpa login) -->
     <div id="admin-content" class="p-4 md:p-8 fade-in">
         <div class="max-w-6xl mx-auto">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
@@ -97,7 +97,7 @@
         const auth = getAuth(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tilik-psikologi-prod';
 
-        // Inisialisasi Autentikasi Langsung
+        // Inisialisasi Autentikasi Langsung tanpa prompt password
         const initAuth = async () => {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
@@ -114,7 +114,6 @@
             }
         };
 
-        // Mulai autentikasi saat file dimuat
         initAuth();
 
         onAuthStateChanged(auth, (user) => { 
@@ -122,6 +121,7 @@
         });
 
         function loadData() {
+            // Path koleksi tetap terjaga sesuai infrastruktur
             const resultsCol = collection(db, 'artifacts', appId, 'public', 'data', 'hasil_tes');
             
             onSnapshot(resultsCol, (snapshot) => {
@@ -130,11 +130,16 @@
                 let dataList = [];
                 snapshot.forEach((doc) => dataList.push(doc.data()));
                 
-                // Urutkan berdasarkan waktu terbaru
+                // Urutkan data berdasarkan waktu terbaru
                 dataList.sort((a, b) => {
                     const parseDate = (str) => {
-                        try { return new Date(str.split(', ').reverse().join(' ')); } 
-                        catch(e) { return new Date(); }
+                        try {
+                            // Mengubah format dd/mm/yyyy, hh.mm.ss menjadi format Date yang valid
+                            const parts = str.split(', ');
+                            const dateParts = parts[0].split('/');
+                            const timeParts = parts[1].replace(/\./g, ':');
+                            return new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}T${timeParts}`);
+                        } catch(e) { return new Date(); }
                     };
                     return parseDate(b.waktu) - parseDate(a.waktu);
                 });
@@ -162,7 +167,7 @@
                 document.getElementById('stat-time').innerText = new Date().toLocaleTimeString('id-ID');
             }, (err) => {
                 console.error("Firestore error:", err);
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-center text-red-500 p-10 font-bold">Izin ditolak. Pastikan Rules Firestore sudah diset ke 'true'.</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-center text-red-500 p-10 font-bold">Gagal memuat data. Periksa Rules Firestore.</td></tr>`;
             });
         }
 
