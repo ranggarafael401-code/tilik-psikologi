@@ -1,23 +1,57 @@
-<div id="start-screen" class="min-h-screen flex items-center justify-center p-6">
-    <div class="bg-white max-w-md w-full p-8 rounded-3xl shadow-xl border">
-        <h2 class="text-2xl font-bold text-blue-900 mb-4">Instruksi DISC</h2>
-        <p class="text-sm text-slate-600 mb-6">Pilih 1 pernyataan yang <b>Paling (M)</b> menggambarkan diri Anda, dan 1 yang <b>Paling Tidak (L)</b> menggambarkan diri Anda di setiap baris.</p>
-        <button onclick="startTest()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Mulai Tes</button>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes DISC | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>body { font-family: 'Poppins', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900">
 
-<div id="test-content" class="hidden max-w-3xl mx-auto py-10 px-6">
-    <table class="w-full bg-white rounded-xl overflow-hidden shadow-sm border">
-        <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400">
-            <tr><th class="p-4 text-left">Karakteristik</th><th class="w-12">M</th><th class="w-12">L</th></tr>
-        </thead>
-        <tbody class="text-sm divide-y">
-            <tr>
-                <td class="p-4">Gampang bergaul, ramah, mudah setuju</td>
-                <td class="text-center"><input type="radio" name="r1m" value="I"></td>
-                <td class="text-center"><input type="radio" name="r1l" value="I"></td>
-            </tr>
-            </tbody>
-    </table>
-    <button onclick="submitDISC()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold mt-8">Selesai & Lihat Hasil</button>
-</div>
+    <div id="start-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white max-w-lg w-full p-10 rounded-3xl shadow-xl border text-center">
+            <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+            </div>
+            <h2 class="text-2xl font-bold text-blue-900 mb-4">Instruksi Tes DISC</h2>
+            <p class="text-slate-500 text-sm mb-8 leading-relaxed">Pilihlah satu pernyataan yang <strong>Paling (M)</strong> sesuai dan satu yang <strong>Paling Tidak (L)</strong> sesuai dengan diri Anda di setiap kelompok.</p>
+            <button onclick="document.getElementById('start-screen').classList.add('hidden'); document.getElementById('test-content').classList.remove('hidden');" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200">Mulai Tes</button>
+        </div>
+    </div>
+
+    <div id="test-content" class="hidden min-h-screen py-12 px-6">
+        <div class="max-w-3xl mx-auto">
+            <header class="mb-10 text-center">
+                <h1 class="text-2xl font-bold text-blue-900">Lembar Jawaban DISC</h1>
+                <p class="text-slate-400 text-xs mt-1">Pastikan setiap baris memiliki satu pilihan M dan satu pilihan L.</p>
+            </header>
+
+            <form id="disc-form" class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 text-[10px] uppercase tracking-widest font-bold text-slate-400">
+                            <tr>
+                                <th class="p-5">Karakteristik / Pernyataan</th>
+                                <th class="w-16 text-center">M</th>
+                                <th class="w-16 text-center">L</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            <tr class="hover:bg-blue-50/30 transition">
+                                <td class="p-5 font-medium">Gampang bergaul, ramah, mudah setuju</td>
+                                <td class="text-center"><input type="radio" name="g1m" value="I" class="w-4 h-4 text-blue-600" required></td>
+                                <td class="text-center"><input type="radio" name="g1l" value="I" class="w-4 h-4 text-red-600" required></td>
+                            </tr>
+                            </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold shadow-xl">Selesai & Kirim Hasil</button>
+            </form>
+        </div>
+    </div>
+
+    </body>
+</html>
