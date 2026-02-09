@@ -1,28 +1,14 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Registrasi | Tilik Psikologi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Poppins', sans-serif; }</style>
-</head>
-<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-10 rounded-3xl shadow-xl w-full max-w-md border">
-        <h2 class="text-2xl font-bold text-blue-900 mb-6 text-center">Data Peserta</h2>
-        <input type="text" id="nama" placeholder="Nama Lengkap" class="w-full p-4 bg-slate-100 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="simpanData()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition">Lanjut ke Tes</button>
+<div class="container mx-auto py-20 px-6 text-center">
+    <h1 class="text-3xl font-bold text-blue-900 mb-10">Pilih Alat Tes</h1>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="wpt.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
+            <h3 class="font-bold">Tes WPT</h3>
+        </a>
+        <a href="disc.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
+            <h3 class="font-bold">Tes DISC</h3>
+        </a>
+        <a href="kraepelin.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
+            <h3 class="font-bold">Tes Kraepelin</h3>
+        </a>
     </div>
-
-    <script>
-        function simpanData() {
-            const nama = document.getElementById('nama').value;
-            if (nama) {
-                localStorage.setItem("nama_peserta", nama);
-                // Link ini harus langsung tanpa nama folder!
-                window.location.href = "pilih-tes.html"; 
-            } else { alert("Masukkan nama Anda"); }
-        }
-    </script>
-</body>
-</html>
+</div>
