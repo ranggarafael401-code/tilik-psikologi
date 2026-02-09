@@ -1,122 +1,23 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tes DISC | Tilik Psikologi</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 text-slate-900 font-sans">
-
-    <div id="instruction-screen" class="min-h-screen flex items-center justify-center p-6">
-        <div class="bg-white max-w-2xl w-full p-8 rounded-3xl shadow-xl border">
-            <h2 class="text-2xl font-bold text-blue-900 mb-4">Instruksi Tes DISC</h2>
-            <div class="text-slate-600 space-y-4 mb-8 text-sm leading-relaxed">
-                <p>1. Di bawah ini terdapat kelompok pernyataan yang berisi 4 kalimat.</p>
-                <p>2. Pada setiap kelompok, pilihlah <strong>Satu (1)</strong> pernyataan yang <strong>Paling Menggambarkan</strong> diri Anda (Klik pada kolom <strong>M</strong>).</p>
-                <p>3. Pilih juga <strong>Satu (1)</strong> pernyataan yang <strong>Paling TIDAK Menggambarkan</strong> diri Anda (Klik pada kolom <strong>L</strong>).</p>
-                <p>4. Dalam satu kelompok, Anda tidak boleh memilih M dan L pada pernyataan yang sama.</p>
-                <p class="font-bold text-blue-600 italic">"Kerjakan dengan jujur dan spontan, tidak ada jawaban benar atau salah."</p>
-            </div>
-            <button onclick="startTest()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all">
-                Saya Mengerti, Mulai Tes
-            </button>
-        </div>
+<div id="start-screen" class="min-h-screen flex items-center justify-center p-6">
+    <div class="bg-white max-w-md w-full p-8 rounded-3xl shadow-xl border">
+        <h2 class="text-2xl font-bold text-blue-900 mb-4">Instruksi DISC</h2>
+        <p class="text-sm text-slate-600 mb-6">Pilih 1 pernyataan yang <b>Paling (M)</b> menggambarkan diri Anda, dan 1 yang <b>Paling Tidak (L)</b> menggambarkan diri Anda di setiap baris.</p>
+        <button onclick="startTest()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Mulai Tes</button>
     </div>
+</div>
 
-    <div id="test-screen" class="hidden min-h-screen py-10 px-6">
-        <div class="max-w-3xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-xl font-bold text-blue-900">Lembar Jawaban DISC</h1>
-                <div class="text-xs text-slate-400">Tilik Psikologi Digital</div>
-            </div>
-
-            <form id="disc-form" class="space-y-8">
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                    <h3 class="font-bold text-slate-400 mb-4 uppercase text-xs tracking-widest">Kelompok 1</h3>
-                    <table class="w-full text-sm">
-                        <tr class="bg-slate-50 text-slate-400 text-[10px] font-bold">
-                            <th class="p-2 text-left">Pernyataan</th>
-                            <th class="p-2 text-center w-12">M</th>
-                            <th class="p-2 text-center w-12">L</th>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-3">Gampang bergaul, ramah, mudah setuju</td>
-                            <td class="p-3 text-center"><input type="radio" name="g1m" value="S" required></td>
-                            <td class="p-3 text-center"><input type="radio" name="g1l" value="S" required></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-3">Mempercayai, percaya pada orang lain</td>
-                            <td class="p-3 text-center"><input type="radio" name="g1m" value="I" required></td>
-                            <td class="p-3 text-center"><input type="radio" name="g1l" value="I" required></td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-3">Petualang, suka mengambil risiko</td>
-                            <td class="p-3 text-center"><input type="radio" name="g1m" value="D" required></td>
-                            <td class="p-3 text-center"><input type="radio" name="g1l" value="D" required></td>
-                        </tr>
-                        <tr>
-                            <td class="p-3">Penuh toleransi, menghormati orang lain</td>
-                            <td class="p-3 text-center"><input type="radio" name="g1m" value="C" required></td>
-                            <td class="p-3 text-center"><input type="radio" name="g1l" value="C" required></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <button type="submit" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold shadow-xl">
-                    Selesai & Kirim Hasil
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // KREDENSI FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA",
-            authDomain: "tilikpsikologi-cbt.firebaseapp.com",
-            projectId: "tilikpsikologi-cbt",
-            storageBucket: "tilikpsikologi-cbt.firebasestorage.app",
-            messagingSenderId: "940142802410",
-            appId: "1:940142802410:web:5e6579568ed2774d9a2e93"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        window.startTest = () => {
-            document.getElementById('instruction-screen').classList.add('hidden');
-            document.getElementById('test-screen').classList.remove('hidden');
-            window.scrollTo(0,0);
-        };
-
-        document.getElementById('disc-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = localStorage.getItem("nama_peserta") || "Anonim";
-            
-            // Logika sederhana pengumpulan hasil M dan L
-            const results = new FormData(e.target);
-            let summary = "";
-            results.forEach((value, key) => {
-                summary += `${key}:${value} `;
-            });
-
-            try {
-                await addDoc(collection(db, "hasil_tes"), {
-                    nama: nama,
-                    tes: "DISC (M/L)",
-                    skor: summary,
-                    waktu: new Date().toLocaleString("id-ID")
-                });
-                alert("Terima kasih! Hasil tes Anda telah tersimpan.");
-                window.location.href = "index.html";
-            } catch (error) {
-                alert("Gagal menyimpan data.");
-            }
-        });
-    </script>
-</body>
-</html>
+<div id="test-content" class="hidden max-w-3xl mx-auto py-10 px-6">
+    <table class="w-full bg-white rounded-xl overflow-hidden shadow-sm border">
+        <thead class="bg-slate-50 text-[10px] uppercase font-bold text-slate-400">
+            <tr><th class="p-4 text-left">Karakteristik</th><th class="w-12">M</th><th class="w-12">L</th></tr>
+        </thead>
+        <tbody class="text-sm divide-y">
+            <tr>
+                <td class="p-4">Gampang bergaul, ramah, mudah setuju</td>
+                <td class="text-center"><input type="radio" name="r1m" value="I"></td>
+                <td class="text-center"><input type="radio" name="r1l" value="I"></td>
+            </tr>
+            </tbody>
+    </table>
+    <button onclick="submitDISC()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold mt-8">Selesai & Lihat Hasil</button>
+</div>
