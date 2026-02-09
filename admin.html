@@ -4,28 +4,48 @@
     <meta charset="UTF-8">
     <title>Admin Dashboard | Tilik Psikologi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-900">
-    <header class="bg-blue-900 text-white p-6 shadow-md">
-        <h1 class="text-xl font-bold">Hasil Asesmen Tilik Psikologi</h1>
-        <p class="text-xs opacity-70">Admin: Rafael Ramadhan | Univ. Yudharta Pasuruan</p>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <header class="bg-blue-900 text-white py-6 px-8 shadow-lg no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold">Dashboard Hasil Asesmen</h1>
+                <p class="text-blue-200 text-sm">Fakultas Psikologi Universitas Yudharta Pasuruan</p>
+            </div>
+            <div class="text-right">
+                <span class="bg-blue-800 px-3 py-1 rounded-full text-xs">Admin: Rafael Ramadhan</span>
+            </div>
+        </div>
     </header>
 
-    <main class="p-8">
-        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-slate-100 text-xs font-bold uppercase text-slate-500">
-                    <tr>
-                        <th class="p-4">Nama Peserta</th>
-                        <th class="p-4">Tes</th>
-                        <th class="p-4 text-center">Skor</th>
-                        <th class="p-4 text-right">Waktu</th>
-                    </tr>
-                </thead>
-                <tbody id="data-display" class="divide-y text-sm">
-                    <tr><td colspan="4" class="p-10 text-center italic">Memuat data dari Firebase...</td></tr>
-                </tbody>
-            </table>
+    <main class="container mx-auto py-10 px-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h2 class="font-bold text-lg text-slate-700">Database Hasil Tes (Real-time)</h2>
+                <button onclick="exportSemuaData()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700 transition">
+                    Cetak Semua (.PDF)
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table id="tabel-hasil" class="w-full text-left">
+                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th class="p-4">Nama Peserta</th>
+                            <th class="p-4">Alat Tes</th>
+                            <th class="p-4">Skor</th>
+                            <th class="p-4">Waktu</th>
+                            <th class="p-4 no-print text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-display" class="divide-y divide-slate-100 text-sm">
+                        <tr><td colspan="5" class="p-10 text-center italic text-slate-400">Menghubungkan ke Firebase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
@@ -33,35 +53,63 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // KREDENSI DARI SCREENSHOT (159)
+        // KREDENSI FIREBASE RAFAEL
         const firebaseConfig = {
             apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA",
             authDomain: "tilikpsikologi-cbt.firebaseapp.com",
             projectId: "tilikpsikologi-cbt",
             storageBucket: "tilikpsikologi-cbt.firebasestorage.app",
             messagingSenderId: "940142802410",
-            appId: "1:940142802410:web:5e6579568ed2774d9a2e93",
-            measurementId: "G-X9KM4DEJJK"
+            appId: "1:940142802410:web:5e6579568ed2774d9a2e93"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const q = query(collection(db, "hasil_tes"), orderBy("waktu", "desc"));
-
+        
         onSnapshot(q, (snapshot) => {
             const tableBody = document.getElementById('data-display');
             tableBody.innerHTML = "";
+            
             snapshot.forEach((doc) => {
-                const d = doc.data();
+                const data = doc.data();
                 tableBody.innerHTML += `
-                    <tr class="hover:bg-blue-50">
-                        <td class="p-4 font-bold text-blue-900">${d.nama || 'Anonim'}</td>
-                        <td class="p-4"><span class="bg-slate-200 px-2 py-0.5 rounded text-[10px]">${d.tes || '-'}</span></td>
-                        <td class="p-4 text-center font-black">${d.skor || '0'}</td>
-                        <td class="p-4 text-right text-slate-400 text-xs">${d.waktu || '-'}</td>
+                    <tr class="hover:bg-blue-50/50 transition">
+                        <td class="p-4 font-bold text-slate-800">${data.nama || '-'}</td>
+                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-black">${data.tes || '-'}</span></td>
+                        <td class="p-4 font-black text-blue-600">${data.skor || '0'}</td>
+                        <td class="p-4 text-xs text-slate-400">${data.waktu || '-'}</td>
+                        <td class="p-4 text-center no-print">
+                            <button onclick="cetakSatu('${data.nama}', '${data.tes}', '${data.skor}', '${data.waktu}')" class="text-blue-600 hover:underline text-xs font-bold">PDF</button>
+                        </td>
                     </tr>`;
             });
         });
+
+        // FUNGSI CETAK PDF SATUAN
+        window.cetakSatu = (nama, tes, skor, waktu) => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(18);
+            doc.text("HASIL ASESMEN PSIKOLOGI", 105, 20, { align: "center" });
+            doc.setFontSize(12);
+            doc.text("Tilik Psikologi - Digital Assessment Platform", 105, 28, { align: "center" });
+            doc.line(20, 35, 190, 35);
+
+            doc.text(`Nama Peserta : ${nama}`, 20, 50);
+            doc.text(`Alat Tes     : ${tes}`, 20, 60);
+            doc.text(`Skor / Hasil : ${skor}`, 20, 70);
+            doc.text(`Waktu Selesai: ${waktu}`, 20, 80);
+            
+            doc.setFontSize(10);
+            doc.text("Dicetak oleh: Rafael Ramadhan (Admin)", 20, 120);
+            doc.save(`Hasil_${tes}_${nama}.pdf`);
+        };
     </script>
+
+    <style>
+        @media print { .no-print { display: none; } }
+    </style>
 </body>
 </html>
