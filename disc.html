@@ -1,13 +1,96 @@
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-3xl shadow-lg border border-slate-100">
-    <div id="disc-question" class="text-center">
-        <h2 class="text-sm font-bold text-blue-500 uppercase tracking-widest mb-2">Pernyataan</h2>
-        <p id="question-text" class="text-xl text-slate-800 font-medium mb-10 leading-relaxed">Saya adalah orang yang ambisius dan suka tantangan.</p>
-        
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="nextDisc('D')" class="py-4 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-blue-50 rounded-2xl transition-all font-semibold">Sangat Sesuai</button>
-            <button onclick="nextDisc('I')" class="py-4 bg-slate-50 border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50 rounded-2xl transition-all font-semibold">Sesuai</button>
-            <button onclick="nextDisc('S')" class="py-4 bg-slate-50 border-2 border-transparent hover:border-emerald-500 hover:bg-emerald-50 rounded-2xl transition-all font-semibold">Kurang Sesuai</button>
-            <button onclick="nextDisc('C')" class="py-4 bg-slate-50 border-2 border-transparent hover:border-red-500 hover:bg-red-50 rounded-2xl transition-all font-semibold">Tidak Sesuai</button>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes DISC | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Poppins', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <div class="container mx-auto px-6 py-12 max-w-2xl">
+        <!-- Progress -->
+        <div class="mb-12">
+            <div class="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+                <span>Progress Tes</span>
+                <span id="progress-text">1 / 24</span>
+            </div>
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 4%"></div>
+            </div>
+        </div>
+
+        <!-- Kartu Soal -->
+        <div id="test-card" class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
+            <h2 class="text-blue-600 font-bold text-sm uppercase mb-4">Pilih satu yang paling sesuai:</h2>
+            <div id="options-container" class="space-y-4">
+                <!-- Opsi di-generate JS -->
+            </div>
+        </div>
+
+        <!-- Hasil -->
+        <div id="result-screen" class="hidden text-center bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6">Hasil Analisis DISC</h2>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="p-4 bg-red-50 rounded-2xl"><p class="text-xs font-bold text-red-600">D</p><h3 id="score-D" class="text-2xl font-black">0</h3></div>
+                <div class="p-4 bg-yellow-50 rounded-2xl"><p class="text-xs font-bold text-yellow-600">I</p><h3 id="score-I" class="text-2xl font-black">0</h3></div>
+                <div class="p-4 bg-green-50 rounded-2xl"><p class="text-xs font-bold text-green-600">S</p><h3 id="score-S" class="text-2xl font-black">0</h3></div>
+                <div class="p-4 bg-blue-50 rounded-2xl"><p class="text-xs font-bold text-blue-600">C</p><h3 id="score-C" class="text-2xl font-black">0</h3></div>
+            </div>
+            <a href="index.html" class="text-blue-600 font-bold hover:underline">Selesai & Beranda</a>
         </div>
     </div>
-</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", authDomain: "tilikpsikologi-cbt.firebaseapp.com", projectId: "tilikpsikologi-cbt", storageBucket: "tilikpsikologi-cbt.firebasestorage.app", messagingSenderId: "940142802410", appId: "1:940142802410:web:5e6579568ed2774d9a2e93" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const questions = [
+            { options: [{t:"Tegas & Dominan", c:"D"}, {t:"Ceria & Persuasif", c:"I"}, {t:"Tenang & Sabar", c:"S"}, {t:"Teliti & Rinci", c:"C"}] },
+            { options: [{t:"Ambisius", c:"D"}, {t:"Komunikatif", c:"I"}, {t:"Penyayang", c:"S"}, {t:"Sistematis", c:"C"}] }
+            // Tambahkan soal lainnya di sini
+        ];
+
+        let currentQ = 0;
+        let scores = { D:0, I:0, S:0, C:0 };
+
+        function loadQuestion() {
+            if(currentQ >= questions.length) return finish();
+            const q = questions[currentQ];
+            document.getElementById('progress-text').innerText = `${currentQ + 1} / ${questions.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-5 bg-slate-50 border-2 border-transparent hover:border-blue-500 hover:bg-blue-50 rounded-2xl text-left transition-all font-medium";
+                btn.innerText = opt.t;
+                btn.onclick = () => { scores[opt.c]++; currentQ++; loadQuestion(); };
+                container.appendChild(btn);
+            });
+        }
+
+        async function finish() {
+            const nama = localStorage.getItem("nama_peserta") || "Peserta";
+            const skorString = `D:${scores.D}, I:${scores.I}, S:${scores.S}, C:${scores.C}`;
+            await addDoc(collection(db, "hasil_tes"), { nama, tes: "DISC", skor: skorString, waktu: new Date().toLocaleString() });
+            
+            document.getElementById('test-card').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('score-D').innerText = scores.D;
+            document.getElementById('score-I').innerText = scores.I;
+            document.getElementById('score-S').innerText = scores.S;
+            document.getElementById('score-C').innerText = scores.C;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
