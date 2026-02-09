@@ -2,114 +2,194 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard | Tilik Psikologi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f1f5f9; color: #1e293b; }
+        .admin-card { background: #ffffff; border: 1px solid #e2e8f0; }
+        .table-header { background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+        .badge-disc { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .badge-wpt { background-color: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .badge-kraepelin { background-color: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+        #login-overlay { background-color: #0f172a; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body class="min-h-screen">
 
-    <header class="bg-blue-900 text-white py-6 px-8 shadow-lg no-print">
-        <div class="container mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold">Dashboard Hasil Asesmen</h1>
-                <p class="text-blue-200 text-sm">Fakultas Psikologi Universitas Yudharta Pasuruan</p>
+    <!-- Screen Login -->
+    <div id="login-overlay" class="fixed inset-0 p-6">
+        <div class="w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
             </div>
-            <div class="text-right">
-                <span class="bg-blue-800 px-3 py-1 rounded-full text-xs">Admin: Rafael Ramadhan</span>
+            <h2 class="text-2xl font-black text-slate-900 mb-2">Admin Login</h2>
+            <p class="text-slate-500 text-sm mb-8">Masukkan password untuk melihat hasil data peserta.</p>
+            <input type="password" id="adminPassword" placeholder="Password" class="w-full px-6 py-4 rounded-2xl border-2 border-slate-100 focus:border-blue-500 outline-none mb-4 text-center font-bold tracking-widest">
+            <button onclick="checkAdminPassword()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-xl shadow-blue-200">Masuk ke Panel</button>
+            <p id="login-error" class="text-red-500 text-xs mt-4 font-bold hidden">Password salah!</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="admin-content" class="hidden p-4 md:p-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h1 class="text-2xl font-black text-slate-900 tracking-tight">Admin <span class="text-blue-600">Panel</span></h1>
+                    <p class="text-slate-500 text-sm">Monitoring hasil asesmen secara real-time.</p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto">
+                    <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="w-full md:w-64 px-4 py-2 rounded-xl border border-slate-300 outline-none text-sm">
+                    <button onclick="exportCSV()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">Export CSV</button>
+                </div>
+            </div>
+
+            <div class="admin-card rounded-[2rem] shadow-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="resultsTable">
+                        <thead>
+                            <tr class="table-header text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                                <th class="px-6 py-5">Waktu</th>
+                                <th class="px-6 py-5">Nama Peserta</th>
+                                <th class="px-6 py-5">Jenis Tes</th>
+                                <th class="px-6 py-5">Hasil / Skor</th>
+                                <th class="px-6 py-5">Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody" class="text-sm font-medium text-slate-700">
+                            <!-- Data dimuat di sini -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </header>
-
-    <main class="container mx-auto py-10 px-6">
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <h2 class="font-bold text-lg text-slate-700">Database Hasil Tes (Real-time)</h2>
-                <button onclick="exportSemuaData()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-green-700 transition">
-                    Cetak Semua (.PDF)
-                </button>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table id="tabel-hasil" class="w-full text-left">
-                    <thead class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                        <tr>
-                            <th class="p-4">Nama Peserta</th>
-                            <th class="p-4">Alat Tes</th>
-                            <th class="p-4">Skor</th>
-                            <th class="p-4">Waktu</th>
-                            <th class="p-4 no-print text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-display" class="divide-y divide-slate-100 text-sm">
-                        <tr><td colspan="5" class="p-10 text-center italic text-slate-400">Menghubungkan ke Firebase...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // KREDENSI FIREBASE RAFAEL
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA",
-            authDomain: "tilikpsikologi-cbt.firebaseapp.com",
-            projectId: "tilikpsikologi-cbt",
-            storageBucket: "tilikpsikologi-cbt.firebasestorage.app",
-            messagingSenderId: "940142802410",
-            appId: "1:940142802410:web:5e6579568ed2774d9a2e93"
+        // Konfigurasi menggunakan variabel lingkungan
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { 
+            apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", 
+            authDomain: "tilikpsikologi-cbt.firebaseapp.com", 
+            projectId: "tilikpsikologi-cbt", 
+            storageBucket: "tilikpsikologi-cbt.firebasestorage.app", 
+            messagingSenderId: "940142802410", 
+            appId: "1:940142802410:web:5e6579568ed2774d9a2e93" 
         };
-
+        
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const q = query(collection(db, "hasil_tes"), orderBy("waktu", "desc"));
-        
-        onSnapshot(q, (snapshot) => {
-            const tableBody = document.getElementById('data-display');
-            tableBody.innerHTML = "";
-            
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                tableBody.innerHTML += `
-                    <tr class="hover:bg-blue-50/50 transition">
-                        <td class="p-4 font-bold text-slate-800">${data.nama || '-'}</td>
-                        <td class="p-4"><span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-[10px] font-black">${data.tes || '-'}</span></td>
-                        <td class="p-4 font-black text-blue-600">${data.skor || '0'}</td>
-                        <td class="p-4 text-xs text-slate-400">${data.waktu || '-'}</td>
-                        <td class="p-4 text-center no-print">
-                            <button onclick="cetakSatu('${data.nama}', '${data.tes}', '${data.skor}', '${data.waktu}')" class="text-blue-600 hover:underline text-xs font-bold">PDF</button>
-                        </td>
-                    </tr>`;
-            });
+        const auth = getAuth(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'tilik-psikologi-prod';
+
+        const SECRET_PASSWORD = "admin123"; 
+
+        window.checkAdminPassword = () => {
+            if (document.getElementById('adminPassword').value === SECRET_PASSWORD) {
+                document.getElementById('login-overlay').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                initAuth();
+            } else {
+                document.getElementById('login-error').classList.remove('hidden');
+                setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000);
+            }
+        };
+
+        const initAuth = async () => {
+            // Perbaikan logika: Mencoba Custom Token terlebih dahulu, jika gagal atau tidak ada, masuk anonim.
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        console.log("Signed in with custom token");
+                    } catch (e) {
+                        console.log("Custom token failed, falling back to anonymous...");
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                    console.log("Signed in anonymously");
+                }
+            } catch (err) { 
+                console.error("Auth error:", err); 
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => { 
+            if (user) loadData(); 
         });
 
-        // FUNGSI CETAK PDF SATUAN
-        window.cetakSatu = (nama, tes, skor, waktu) => {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+        function loadData() {
+            // Path koleksi sesuai Rule 1
+            const resultsCol = collection(db, 'artifacts', appId, 'public', 'data', 'hasil_tes');
             
-            doc.setFontSize(18);
-            doc.text("HASIL ASESMEN PSIKOLOGI", 105, 20, { align: "center" });
-            doc.setFontSize(12);
-            doc.text("Tilik Psikologi - Digital Assessment Platform", 105, 28, { align: "center" });
-            doc.line(20, 35, 190, 35);
+            onSnapshot(resultsCol, (snapshot) => {
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = "";
+                let dataList = [];
+                snapshot.forEach((doc) => dataList.push(doc.data()));
+                
+                // Sorting dilakukan di JavaScript memori (Rule 2)
+                dataList.sort((a, b) => {
+                    const dateA = new Date(a.waktu.split(', ').reverse().join(' '));
+                    const dateB = new Date(b.waktu.split(', ').reverse().join(' '));
+                    return dateB - dateA;
+                });
 
-            doc.text(`Nama Peserta : ${nama}`, 20, 50);
-            doc.text(`Alat Tes     : ${tes}`, 20, 60);
-            doc.text(`Skor / Hasil : ${skor}`, 20, 70);
-            doc.text(`Waktu Selesai: ${waktu}`, 20, 80);
-            
-            doc.setFontSize(10);
-            doc.text("Dicetak oleh: Rafael Ramadhan (Admin)", 20, 120);
-            doc.save(`Hasil_${tes}_${nama}.pdf`);
+                if(dataList.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="5" class="px-6 py-10 text-center text-slate-400 italic">Belum ada data masuk.</td></tr>`;
+                    return;
+                }
+
+                dataList.forEach((data) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-colors";
+                    let bCls = data.tes === "DISC" ? "badge-disc" : (data.tes === "WPT" ? "badge-wpt" : "badge-kraepelin");
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 text-[11px] font-mono whitespace-nowrap">${data.waktu}</td>
+                        <td class="px-6 py-4 font-bold text-slate-900">${data.nama}</td>
+                        <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${bCls}">${data.tes}</span></td>
+                        <td class="px-6 py-4 font-mono text-xs text-blue-600">${data.skor}</td>
+                        <td class="px-6 py-4 text-xs text-slate-500 italic">${data.catatan || '-'}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+            }, (err) => {
+                console.error("Firestore error:", err);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-center text-red-500 p-10 font-bold">Gagal memuat data. Periksa izin Firestore (Rules).</td></tr>`;
+            });
+        }
+
+        window.filterTable = () => {
+            const f = document.getElementById("searchInput").value.toUpperCase();
+            const tr = document.getElementById("resultsTable").getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                const td = tr[i].getElementsByTagName("td")[1];
+                if (td) tr[i].style.display = (td.textContent || td.innerText).toUpperCase().indexOf(f) > -1 ? "" : "none";
+            }
+        };
+
+        window.exportCSV = () => {
+            const table = document.getElementById("resultsTable");
+            let csv = [];
+            for (let i = 0; i < table.rows.length; i++) {
+                let row = [], cols = table.rows[i].cells;
+                for (let j = 0; j < cols.length; j++) row.push('"' + cols[j].innerText + '"');
+                csv.push(row.join(","));
+            }
+            const blob = new Blob([csv.join("\n")], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `hasil_tes_tilik_${new Date().toLocaleDateString()}.csv`);
+            link.click();
         };
     </script>
-
-    <style>
-        @media print { .no-print { display: none; } }
-    </style>
 </body>
 </html>
