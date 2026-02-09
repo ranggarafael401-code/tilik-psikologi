@@ -3,46 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Tes | TilikPsikologi</title>
+    <title>Pilih Alat Tes | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Poppins', sans-serif; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body class="bg-slate-50 text-slate-900">
 
-    <div class="container mx-auto max-w-2xl py-20 px-6 text-center">
-        <h2 class="text-3xl font-bold text-blue-900 mb-2">Halo, <span id="namaUser">Peserta</span>!</h2>
-        <p class="text-slate-500 mb-10">Silakan pilih alat tes yang ingin dikerjakan sesuai instruksi penguji.</p>
-
-        <div class="grid gap-4">
-            <a href="wpt.html" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md transition flex justify-between items-center group">
-                <div class="text-left">
-                    <h3 class="font-bold text-lg group-hover:text-blue-600">Tes WPT (Kognitif)</h3>
-                    <p class="text-xs text-slate-400">Durasi: 12 Menit</p>
-                </div>
-                <span class="text-blue-600">Mulai →</span>
-            </a>
-
-            <a href="disc.html" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md transition flex justify-between items-center group">
-                <div class="text-left">
-                    <h3 class="font-bold text-lg group-hover:text-blue-600">Tes DISC (Kepribadian)</h3>
-                    <p class="text-xs text-slate-400">Tanpa Batas Waktu</p>
-                </div>
-                <span class="text-blue-600">Mulai →</span>
-            </a>
-
-            <a href="kraepelin.html" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 hover:shadow-md transition flex justify-between items-center group">
-                <div class="text-left">
-                    <h3 class="font-bold text-lg group-hover:text-blue-600">Tes Kraepelin (Kinerja)</h3>
-                    <p class="text-xs text-slate-400">Durasi: 10 Kolom x 30 Detik</p>
-                </div>
-                <span class="text-blue-600">Mulai →</span>
-            </a>
+    <header class="bg-white border-b border-slate-100 py-6">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">T</div>
+                <span class="text-xl font-bold tracking-tight text-blue-900">Tilik<span class="text-blue-500">Psikologi</span></span>
+            </div>
+            <a href="index.html" class="text-sm font-semibold text-slate-400 hover:text-blue-600 transition">Kembali</a>
         </div>
-    </div>
+    </header>
 
-    <script>
-        // Ambil nama dari registrasi
-        const data = JSON.parse(localStorage.getItem('pesertaAktif'));
-        if(data) document.getElementById('namaUser').innerText = data.nama;
-    </script>
+    <main class="container mx-auto py-16 px-6">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-blue-900 mb-2">Pilih Alat Tes</h1>
+            <p class="text-slate-500 mb-12">Silakan pilih salah satu asesmen di bawah ini untuk memulai pengerjaan.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 font-bold">W</div>
+                    <h3 class="font-bold text-lg mb-2 text-blue-900">Tes WPT</h3>
+                    <p class="text-xs text-slate-400 mb-6">Mengukur kemampuan kognitif dan logika umum secara cepat.</p>
+                    <a href="wpt.html" class="block text-center bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 font-bold">D</div>
+                    <h3 class="font-bold text-lg mb-2 text-blue-900">Tes DISC</h3>
+                    <p class="text-xs text-slate-400 mb-6">Analisis tipe kepribadian dalam lingkungan kerja dan sosial.</p>
+                    <a href="disc.html" class="block text-center bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 font-bold">K</div>
+                    <h3 class="font-bold text-lg mb-2 text-blue-900">Tes Kraepelin</h3>
+                    <p class="text-xs text-slate-400 mb-6">Mengukur ketahanan kerja, ketelitian, dan konsentrasi.</p>
+                    <a href="kraepelin.html" class="block text-center bg-blue-600 text-white py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-10 text-center text-slate-400 text-[10px] uppercase tracking-widest">
+        Fakultas Psikologi Universitas Yudharta Pasuruan
+    </footer>
+
 </body>
 </html>
