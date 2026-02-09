@@ -1,14 +1,79 @@
-<div class="container mx-auto py-20 px-6 text-center">
-    <h1 class="text-3xl font-bold text-blue-900 mb-10">Pilih Alat Tes</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a href="wpt.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
-            <h3 class="font-bold">Tes WPT</h3>
-        </a>
-        <a href="disc.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
-            <h3 class="font-bold">Tes DISC</h3>
-        </a>
-        <a href="kraepelin.html" class="p-8 bg-white rounded-3xl shadow-sm border hover:border-blue-500 transition">
-            <h3 class="font-bold">Tes Kraepelin</h3>
-        </a>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Asesmen | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .test-card:hover { transform: translateY(-8px); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <nav class="bg-white border-b border-slate-100 py-6 sticky top-0 z-50">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">T</div>
+                <span class="text-xl font-bold tracking-tight text-blue-900">Tilik<span class="text-blue-500">Psikologi</span></span>
+            </div>
+            <span class="text-xs font-medium text-slate-400">Digital Assessment Center</span>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-16 px-6 flex-grow">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h1 class="text-3xl font-bold text-blue-900 mb-3">Selamat Datang, Peserta!</h1>
+                <p class="text-slate-500">Silakan pilih salah satu alat tes di bawah ini untuk memulai pengerjaan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes WPT</h3>
+                    <p class="text-sm text-slate-400 mb-8 flex-grow">Uji kognitif untuk mengukur kemampuan logika, verbal, dan numerik secara cepat.</p>
+                    <a href="wpt.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes DISC</h3>
+                    <p class="text-sm text-slate-400 mb-8 flex-grow">Analisis gaya kepribadian untuk memahami perilaku dalam situasi kerja dan sosial.</p>
+                    <a href="disc.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes Kraepelin</h3>
+                    <p class="text-sm text-slate-400 mb-8 flex-grow">Mengukur ketahanan kerja, ketelitian, serta konsentrasi melalui penjumlahan angka.</p>
+                    <a href="kraepelin.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-100 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Fakultas Psikologi - Universitas Yudharta Pasuruan</p>
+        </div>
+    </footer>
+
+</body>
+</html>
