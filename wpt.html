@@ -9,37 +9,89 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: 'Poppins', sans-serif; user-select: none; background-color: #0f172a; color: white; }
-        .answer-btn { background-color: #1e293b; border: 1px solid #334155; transition: all 0.2s ease; }
-        .answer-btn:hover { border-color: #3b82f6; background-color: #1e3a8a; }
+        .answer-btn { background-color: #1e293b; border: 1px solid #334155; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .answer-btn:hover { border-color: #3b82f6; background-color: #1e3a8a; transform: translateY(-2px); }
         .answer-btn:active { transform: scale(0.98); }
+        .skip-btn { border: 1px dashed #475569; color: #94a3b8; transition: all 0.2s; }
+        .skip-btn:hover { background-color: rgba(71, 85, 105, 0.2); color: white; border-style: solid; border-color: white; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center p-6">
+<body class="min-h-screen flex flex-col items-center p-6 bg-slate-950">
 
-    <div id="test-header" class="w-full max-w-2xl mb-8 flex justify-between items-center">
-        <div id="timer" class="text-2xl font-black text-red-500">12:00</div>
-        <div class="flex flex-col items-end">
-            <span id="progress-text" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Soal 1 / 50</span>
+    <!-- Header & Progress -->
+    <div id="test-header" class="w-full max-w-3xl mb-8 mt-4 flex justify-between items-center">
+        <div class="flex flex-col">
+            <h1 class="text-xl font-black text-white">Tes <span class="text-blue-500">WPT</span></h1>
+            <div id="timer" class="text-2xl font-black text-red-500 tracking-tighter">12:00</div>
         </div>
-    </div>
-
-    <div id="test-container" class="w-full max-w-2xl bg-[#1e293b] rounded-[2.5rem] p-10 border border-[#334155] shadow-2xl">
-        <p id="question-text" class="text-xl font-medium mb-10 leading-relaxed text-center">Contoh: Mana yang tidak termasuk kelompoknya?</p>
-        <div id="options-grid" class="space-y-4">
-            <!-- Opsi akan muncul di sini -->
-        </div>
-    </div>
-
-    <div id="result-screen" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-[#0f172a]">
-        <div class="text-center w-full max-w-sm">
-            <h2 class="text-3xl font-bold mb-2">Tes Berakhir</h2>
-            <div class="bg-blue-600 py-10 rounded-[3rem] shadow-2xl mb-8 mt-6">
-                <p class="text-blue-100 text-xs font-bold uppercase tracking-widest mb-2">Skor IQ (Simulasi)</p>
-                <h3 id="final-score" class="text-7xl font-black text-white">0</h3>
+        <div class="flex flex-col items-end w-1/2">
+            <span id="progress-text" class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-2">Soal 1 / 50</span>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 2%"></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Instruksi Awal -->
+    <div id="instruction-screen" class="fixed inset-0 z-[150] bg-slate-950 flex items-center justify-center p-6">
+        <div class="max-w-md w-full bg-[#1e293b] rounded-[2.5rem] p-10 border border-[#334155] text-center shadow-2xl">
+            <div class="w-16 h-16 bg-blue-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl font-black shadow-lg shadow-blue-900/20">?</div>
+            <h2 class="text-2xl font-bold mb-4">Instruksi WPT</h2>
+            <div class="text-slate-400 text-sm mb-8 leading-relaxed text-left space-y-3">
+                <p>1. Tes ini mengukur kemampuan pemecahan masalah (50 soal, 12 Menit).</p>
+                <p>2. <span class="text-blue-400 font-bold underline">PENTING:</span> Jika Anda menemui soal yang sulit, tekan tombol <strong>"Loncati Soal"</strong> untuk lanjut ke soal berikutnya.</p>
+                <p>3. Soal yang dilewati akan muncul kembali setelah Anda mencapai soal terakhir, selama waktu masih tersedia.</p>
+            </div>
+            <button onclick="startTest()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 transition-all">Mulai Tes Sekarang</button>
+        </div>
+    </div>
+
+    <!-- Main Test Area -->
+    <div id="test-container" class="hidden w-full max-w-3xl glass rounded-[3rem] p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="question-box" class="min-h-[150px] flex items-center justify-center mb-10">
+            <p id="question-text" class="text-2xl font-semibold text-center leading-relaxed text-slate-100">Memuat soal...</p>
+        </div>
+        
+        <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+            <!-- Opsi muncul di sini -->
+        </div>
+
+        <div class="border-t border-slate-700 pt-8 flex justify-center">
+            <button onclick="skipQuestion()" class="skip-btn px-10 py-3 rounded-xl text-sm font-bold flex items-center gap-2">
+                Loncati Soal Ini
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Layar Hasil -->
+    <div id="result-screen" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950 overflow-y-auto">
+        <div class="text-center w-full max-w-xl py-12">
+            <div class="w-24 h-24 bg-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            
+            <h2 class="text-4xl font-black text-white mb-2 tracking-tight">Selesai</h2>
+            <p class="text-slate-500 mb-10">Hasil analisis kognitif simulasi Anda:</p>
+            
+            <div class="bg-blue-600 py-12 rounded-[4rem] shadow-2xl shadow-blue-900/40 mb-10">
+                <p class="text-blue-100 text-xs font-bold uppercase tracking-widest mb-2">Total Benar (Skor Mentah)</p>
+                <h3 id="final-score" class="text-8xl font-black text-white">0</h3>
+            </div>
+
+            <div class="bg-slate-900/50 border border-slate-800 p-8 rounded-[2.5rem] text-left mb-10">
+                <h4 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-4 flex items-center gap-2">Kesimpulan Objektif</h4>
+                <p id="conclusion-text" class="text-slate-300 text-sm leading-relaxed italic">Menganalisis hasil...</p>
+            </div>
+
             <div class="flex flex-col gap-3">
-                <button onclick="downloadPDF()" class="w-full py-4 bg-emerald-600 text-white rounded-2xl font-bold">Download Hasil (PDF)</button>
-                <a href="index.html" class="text-slate-500 font-bold text-sm uppercase py-2">Beranda</a>
+                <button onclick="downloadPDF()" class="w-full py-5 bg-emerald-600 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-emerald-700 transition-all">Unduh Laporan PDF</button>
+                <a href="index.html" class="text-slate-500 font-bold text-sm uppercase py-4 hover:text-white transition">Kembali ke Beranda</a>
             </div>
         </div>
     </div>
@@ -53,20 +105,83 @@
         const db = getFirestore(app);
 
         const questions = [
-            { q: "Lawan kata dari 'Cepat' adalah...", o: ["Lambat", "Tinggi", "Lebar", "Besar"], a: 0 },
-            { q: "Mana angka yang berbeda?", o: ["2", "4", "6", "9"], a: 3 }
-            // Tambahkan soal lainnya...
+            { q: "Kaki berhubungan dengan Sepatu seperti Kepala berhubungan dengan...", o: ["Rambut", "Topi", "Otak", "Helm"], a: 1 },
+            { q: "5, 10, 15, 20, ... Angka selanjutnya adalah?", o: ["21", "25", "30", "35"], a: 1 },
+            { q: "Harga 1 pensil Rp 2.000. Berapa harga 5 pensil?", o: ["Rp 7.000", "Rp 10.000", "Rp 12.000", "Rp 15.000"], a: 1 },
+            { q: "Lawan kata dari TINGGI adalah...", o: ["Jangkung", "Pendek", "Rendah", "Kerdil"], a: 1 },
+            { q: "Jika semua A adalah B, dan beberapa B adalah C, maka:", o: ["Semua A adalah C", "Beberapa A mungkin C", "Tidak ada A yang C", "Semua C adalah A"], a: 1 },
+            { q: "A, C, E, G, ... Huruf selanjutnya adalah?", o: ["H", "I", "J", "K"], a: 1 },
+            { q: "Pukul 08:00 ditambah 2 jam 30 menit adalah pukul?", o: ["10:00", "10:30", "10:45", "11:00"], a: 1 },
+            { q: "Mana yang paling berbeda?", o: ["Matahari", "Bulan", "Bintang", "Awan"], a: 3 },
+            { q: "25% dari 200 adalah?", o: ["25", "50", "75", "100"], a: 1 },
+            { q: "Buku : Halaman || Pohon : ?", o: ["Daun", "Akar", "Cabang", "Ranting"], a: 0 },
+            { q: "Jika 2 orang bisa cat tembok dalam 6 jam, 1 orang butuh berapa jam?", o: ["3 jam", "6 jam", "12 jam", "18 jam"], a: 2 },
+            { q: "Urutkan dari yang terkecil: ¾, 0.5, ⅔, 0.8", o: ["0.5, ⅔, ¾, 0.8", "⅔, 0.5, ¾, 0.8", "0.5, ¾, ⅔, 0.8", "0.8, ¾, ⅔, 0.5"], a: 0 },
+            { q: "Semua dokter adalah lulusan SMA. Beberapa lulusan SMA adalah guru. Kesimpulan:", o: ["Semua dokter adalah guru", "Beberapa dokter adalah guru", "Tidak ada dokter yang guru", "Beberapa guru mungkin dokter"], a: 3 },
+            { q: "1, 4, 9, 16, 25, ... Angka selanjutnya?", o: ["30", "36", "49", "64"], a: 1 },
+            { q: "Nasi : Lapar || Selimut : ?", o: ["Hangat", "Tidur", "Dingin", "Nyaman"], a: 2 },
+            { q: "Sebuah mobil menempuh 60 km dalam 1 jam. Berapa km yang ditempuh dalam 45 menit?", o: ["40 km", "45 km", "50 km", "55 km"], a: 1 },
+            { q: "Mana yang bukan kata baku?", o: ["Mengubah", "Merobah", "Mengira", "Mengikuti"], a: 1 },
+            { q: "B, E, H, K, ... Huruf selanjutnya?", o: ["N", "O", "P", "Q"], a: 0 },
+            { q: "Harga diskon 30% dari Rp 300.000 adalah?", o: ["Rp 90.000", "Rp 210.000", "Rp 230.000", "Rp 270.000"], a: 1 },
+            { q: "Jika A=1, B=2, C=3,... Z=26, maka PENA = ?", o: ["32", "33", "34", "35"], a: 3 },
+            { q: "12, 24, 36, 48, ... Angka selanjutnya?", o: ["50", "54", "60", "72"], a: 2 },
+            { q: "Api : Panas || Es : ?", o: ["Dingin", "Beku", "Air", "Mencair"], a: 0 },
+            { q: "Sebuah kereta berangkat 13:45, sampai 4 jam 20 menit kemudian. Pukul berapa sampai?", o: ["17:15", "17:45", "18:05", "18:15"], a: 2 },
+            { q: "3, 6, 12, 24, ... Angka selanjutnya?", o: ["36", "42", "48", "56"], a: 2 },
+            { q: "Mata untuk Melihat seperti Telinga untuk ...", o: ["Rambut", "Mendengar", "Berdiri", "Bernapas"], a: 1 },
+            { q: "Gula : Manis || Cuka : ?", o: ["Asin", "Asam", "Pahit", "Pedas"], a: 1 },
+            { q: "1, 1, 2, 3, 5, 8, 13, ... (Deret Fibonacci). Angka selanjutnya?", o: ["18", "21", "24", "26"], a: 1 },
+            { q: "Jika beberapa X adalah Y, dan semua Y adalah Z, maka:", o: ["Semua X adalah Z", "Beberapa X adalah Z", "Tidak ada X yang Z", "Semua Z adalah X"], a: 1 },
+            { q: "Mana yang berbeda?", o: ["Persegi", "Lingkaran", "Segitiga", "Kubus"], a: 3 },
+            { q: "Sebuah pesta dihadiri 30 orang. Mereka berjabat tangan sekali dengan setiap orang. Ada berapa jabat tangan?", o: ["435", "450", "870", "900"], a: 0 },
+            { q: "8, 5, 4, 9, 1, 7, 6, ... Angka selanjutnya?", o: ["2", "3", "10", "11"], a: 2 },
+            { q: "Sebuah bilangan dikali 3, lalu ditambah 12, hasilnya 42. Berapakah bilangan awal?", o: ["8", "10", "12", "14"], a: 1 },
+            { q: "2, 3, 5, 7, 11, 13, ... (Bilangan prima). Angka selanjutnya?", o: ["15", "17", "19", "21"], a: 1 },
+            { q: "Jika 'ROTI' dikodekan menjadi 'UPRG', maka 'SUSU' dikodekan menjadi?", o: ["VXVX", "VVXX", "XVXV", "XXVV"], a: 0 },
+            { q: "Sebuah tangga memiliki 15 anak tangga. Jika naik 2 turun 1, berapa langkah untuk sampai puncak?", o: ["14", "21", "28", "29"], a: 2 },
+            { q: "A anak dari B, C saudara A, D orang tua B. D dengan C?", o: ["Kakek/Nenek", "Paman/Bibi", "Sepupu", "Saudara"], a: 0 },
+            { q: "3, 9, 4, 16, 5, 25, 6, ... Angka selanjutnya?", o: ["30", "36", "49", "64"], a: 1 },
+            { q: "Jam terlambat 4 menit tiap jam. Setelah 3 jam, terlambat?", o: ["10 menit", "12 menit", "15 menit", "20 menit"], a: 1 },
+            { q: "BANDUNG = 58, JAKARTA = 71, SURABAYA = ?", o: ["92", "96", "100", "104"], a: 1 },
+            { q: "Pak Andi = 4x anak. Dalam 10 thn = 2x anak. Usia Pak Andi?", o: ["20 tahun", "30 tahun", "40 tahun", "50 tahun"], a: 2 },
+            { q: "Mana yang bukan kuadrat sempurna?", o: ["121", "144", "169", "250"], a: 3 },
+            { q: "12, 1, 11, 2, 10, 3, 9, ... Angka selanjutnya?", o: ["4", "5", "6", "8"], a: 0 },
+            { q: "BURSA = 35, SAHAM = 42. Maka INDEKS = ?", o: ["55", "58", "62", "65"], a: 1 },
+            { q: "Sirup:Air = 1:4. Tambah 200ml sirup jadi 1:2. Total awal?", o: ["600 ml", "800 ml", "1000 ml", "1200 ml"], a: 1 },
+            { q: "MINGGU = 76, SENIN = 66, maka SELASA = ?", o: ["72", "74", "78", "80"], a: 1 },
+            { q: "Bilangan bagi 6 sisa 2, bagi 8 sisa 4, bagi 9 sisa 5?", o: ["50", "68", "86", "104"], a: 1 },
+            { q: "Z, X, V, T, R, ... Huruf selanjutnya?", o: ["P", "O", "N", "M"], a: 0 },
+            { q: "Turnamen catur, 10 pertandingan. Berapa pemain?", o: ["4", "5", "6", "7"], a: 1 },
+            { q: "Angka puluhan ditukar satuan turun 36. Jumlah angka 12?", o: ["48", "57", "75", "84"], a: 3 },
+            { q: "Jika 5@2 = 29, 3@7 = 58, maka 4@6 = ?", o: ["40", "44", "52", "60"], a: 2 }
         ];
 
         let currentQ = 0;
         let score = 0;
         let timeLeft = 720; // 12 Menit
         let timer;
+        let isFinished = false;
+        let userAnswers = new Array(questions.length).fill(null); // null = belum dijawab
 
         function loadQuestion() {
-            if(currentQ >= questions.length) return finishTest();
+            // Cek apakah sudah terjawab semua
+            const unanswered = userAnswers.map((val, idx) => val === null ? idx : null).filter(val => val !== null);
             
-            document.getElementById('progress-text').innerText = `Soal ${currentQ + 1} / ${questions.length}`;
+            if (unanswered.length === 0) {
+                return finishTest();
+            }
+
+            // Jika currentQ sudah dijawab, cari index berikutnya yang belum dijawab
+            if (userAnswers[currentQ] !== null) {
+                currentQ = unanswered[0];
+            }
+
+            // Update Progress UI
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            document.getElementById('progress-text').innerText = `Progres: ${answeredCount} / ${questions.length} Terjawab`;
+            document.getElementById('progress-bar').style.width = `${(answeredCount / questions.length) * 100}%`;
+            
             const q = questions[currentQ];
             document.getElementById('question-text').innerText = q.q;
             
@@ -74,14 +189,65 @@
             grid.innerHTML = "";
             q.o.forEach((opt, i) => {
                 const btn = document.createElement('button');
-                btn.className = "answer-btn w-full p-5 rounded-2xl text-left font-medium transition-all";
+                btn.className = "answer-btn w-full p-6 rounded-3xl text-left font-medium text-lg transition-all";
                 btn.innerText = opt;
-                btn.onclick = () => { if(i === q.a) score++; currentQ++; loadQuestion(); };
+                btn.onclick = () => {
+                    handleAnswer(i);
+                };
                 grid.appendChild(btn);
             });
         }
 
-        window.startTimer = () => {
+        function handleAnswer(choiceIdx) {
+            userAnswers[currentQ] = choiceIdx;
+            
+            // Cari soal berikutnya yang belum dijawab
+            const nextUnanswered = userAnswers.indexOf(null, currentQ + 1);
+            if (nextUnanswered !== -1) {
+                currentQ = nextUnanswered;
+            } else {
+                currentQ = userAnswers.indexOf(null); // Loop balik ke depan jika ada yang diskip
+            }
+            
+            loadQuestion();
+        }
+
+        window.skipQuestion = () => {
+            // Cari soal berikutnya yang belum dijawab
+            let nextIdx = userAnswers.indexOf(null, currentQ + 1);
+            
+            if (nextIdx === -1) {
+                // Jika sudah di ujung, cari dari awal lagi
+                nextIdx = userAnswers.indexOf(null);
+            }
+
+            if (nextIdx !== -1 && nextIdx !== currentQ) {
+                currentQ = nextIdx;
+                loadQuestion();
+            } else {
+                // Hanya sisa satu soal ini saja yang belum dijawab
+                console.log("Tidak ada soal lain untuk diloncati.");
+            }
+        };
+
+        function getConclusion() {
+            // Hitung skor akhir saat finish
+            let finalScore = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questions[idx].a) finalScore++;
+            });
+            score = finalScore;
+
+            if (score >= 40) return "Hasil simulasi menunjukkan tingkat kemampuan kognitif yang Sangat Unggul. Anda memiliki kecepatan berpikir dan logika yang sangat baik.";
+            if (score >= 30) return "Hasil simulasi menunjukkan tingkat kemampuan kognitif yang Tinggi. Anda mampu memproses informasi dengan cepat dan akurat.";
+            if (score >= 20) return "Hasil simulasi menunjukkan tingkat kemampuan kognitif yang Rata-rata (Cukup).";
+            return "Hasil simulasi menunjukkan tingkat kemampuan kognitif yang Perlu Ditingkatkan.";
+        }
+
+        window.startTest = () => {
+            document.getElementById('instruction-screen').style.display = 'none';
+            document.getElementById('test-container').classList.remove('hidden');
+            loadQuestion();
             timer = setInterval(() => {
                 timeLeft--;
                 let m = Math.floor(timeLeft / 60);
@@ -92,23 +258,32 @@
         };
 
         async function finishTest() {
+            if(isFinished) return;
+            isFinished = true;
             clearInterval(timer);
+
+            const conclusion = getConclusion(); // Hitung skor di sini
             const nama = localStorage.getItem("nama_peserta") || "Peserta";
+            
             try {
-                await addDoc(collection(db, "hasil_tes"), { nama, tes: "WPT", skor: score, waktu: new Date().toLocaleString('id-ID') });
+                await addDoc(collection(db, "hasil_tes"), {
+                    nama, tes: "WPT", skor: score, waktu: new Date().toLocaleString('id-ID')
+                });
             } catch (err) { console.error(err); }
 
             document.getElementById('test-header').classList.add('hidden');
             document.getElementById('test-container').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
             document.getElementById('final-score').innerText = score;
+            document.getElementById('conclusion-text').innerText = conclusion;
         }
 
         window.downloadPDF = () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const nama = localStorage.getItem("nama_peserta") || "Peserta";
-            
+            const conclusion = getConclusion();
+
             doc.setFont("helvetica", "bold");
             doc.setFontSize(22);
             doc.setTextColor(30, 64, 175);
@@ -118,25 +293,31 @@
             doc.text("Tilik Psikologi", 20, 40);
             doc.line(20, 45, 190, 45);
 
-            doc.setFontSize(12);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "normal");
             doc.text(`Nama Peserta : ${nama}`, 20, 60);
-            doc.text(`Jenis Tes     : WPT (Simulasi)`, 20, 70);
-            doc.text(`Skor Benar    : ${score}`, 20, 80);
+            doc.text(`Jenis Tes     : Wonderlic Personnel Test (Simulasi)`, 20, 70);
+            doc.text(`Skor Benar    : ${score} dari 50 Soal`, 20, 80);
 
+            doc.setFillColor(248, 250, 252);
+            doc.rect(20, 95, 170, 40, 'F');
+            doc.setFont("helvetica", "bold");
+            doc.text("KESIMPULAN OBJEKTIF:", 30, 105);
+            doc.setFont("helvetica", "normal");
+            const splitConclusion = doc.splitTextToSize(conclusion, 150);
+            doc.text(splitConclusion, 30, 115);
+
+            doc.setDrawColor(220, 220, 220);
             doc.line(20, 250, 190, 250);
             doc.setFont("helvetica", "italic");
             doc.setFontSize(9);
-            doc.setTextColor(100, 100, 100);
-            doc.text("Catatan: Hasil ini bersifat simulasi untuk kepentingan akademik dan pembelajaran.", 20, 260);
+            doc.setTextColor(120, 120, 120);
             const disclaimer = "Jika Anda membutuhkan asesmen psikologi yang valid untuk keperluan profesional, kami sarankan untuk menghubungi psikolog atau konsultan SDM terpercaya.";
             const splitDisclaimer = doc.splitTextToSize(disclaimer, 170);
-            doc.text(splitDisclaimer, 20, 265);
+            doc.text(splitDisclaimer, 20, 260);
 
-            doc.save(`Hasil_WPT_${nama}.pdf`);
+            doc.save(`Hasil_WPT_Tilik_${nama}.pdf`);
         };
-
-        loadQuestion();
-        startTimer();
     </script>
 </body>
 </html>
