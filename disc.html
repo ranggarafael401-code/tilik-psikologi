@@ -9,105 +9,79 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body { font-family: 'Poppins', sans-serif; user-select: none; background-color: #0f172a; color: white; }
-        .option-card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .option-card:hover {
-            border-color: #3b82f6;
-            background-color: #1e3a8a;
-            transform: translateY(-2px);
-        }
-        .option-card:active {
-            transform: scale(0.98);
-        }
-        .glass {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .btn-m { background-color: #1e293b; border: 1px solid #334155; transition: all 0.2s; }
+        .btn-m.selected { background-color: #059669; border-color: #10b981; color: white; }
+        .btn-t { background-color: #1e293b; border: 1px solid #334155; transition: all 0.2s; }
+        .btn-t.selected { background-color: #dc2626; border-color: #ef4444; color: white; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center p-6 bg-slate-950">
 
     <!-- Header & Progress -->
-    <div id="test-header" class="w-full max-w-2xl mb-12 mt-4">
-        <div class="flex justify-between items-end mb-4">
-            <div>
-                <h1 class="text-2xl font-black text-white tracking-tight">Tes <span class="text-blue-500">DISC</span></h1>
-                <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">Kepribadian & Perilaku</p>
-            </div>
-            <div class="text-right">
-                <span id="progress-text" class="text-sm font-black text-blue-400">1 / 24</span>
-            </div>
+    <div id="test-header" class="w-full max-w-4xl mb-8 mt-4 flex justify-between items-end">
+        <div>
+            <h1 class="text-xl font-black text-white">Asesmen <span class="text-blue-500">DISC</span></h1>
+            <p id="progress-text" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">Kelompok 1 / 24</p>
         </div>
-        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden shadow-inner">
-            <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-500 ease-out" style="width: 4%"></div>
+        <div class="w-1/2 bg-slate-800 h-1.5 rounded-full overflow-hidden mb-1">
+            <div id="progress-bar" class="bg-blue-600 h-full transition-all duration-500" style="width: 4%"></div>
         </div>
     </div>
 
     <!-- Main Test Area -->
-    <div id="test-container" class="w-full max-w-2xl glass rounded-[2.5rem] p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div class="text-center mb-10">
-            <h2 class="text-lg font-semibold text-slate-200 leading-relaxed">Pilih satu pernyataan yang paling menggambarkan diri Anda saat ini:</h2>
+    <div id="test-container" class="w-full max-w-4xl glass rounded-[3rem] p-8 md:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div class="grid grid-cols-12 gap-4 mb-6 text-center text-[10px] font-black uppercase tracking-tighter text-slate-500">
+            <div class="col-span-8 text-left pl-4">Pernyataan</div>
+            <div class="col-span-2">Paling (M)</div>
+            <div class="col-span-2">Tidak (T)</div>
         </div>
-        
-        <div id="options-grid" class="grid grid-cols-1 gap-4">
-            <!-- Pilihan akan di-generate oleh JavaScript -->
+
+        <div id="options-list" class="space-y-4">
+            <!-- Items generated here -->
+        </div>
+
+        <div class="mt-12 flex justify-between items-center">
+            <p class="text-xs text-slate-500 italic">*Pilih satu di kolom M dan satu di kolom T</p>
+            <button id="next-btn" onclick="nextGroup()" disabled class="bg-blue-600 disabled:bg-slate-800 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold shadow-xl transition-all">
+                Lanjut Kelompok
+            </button>
         </div>
     </div>
 
     <!-- Layar Hasil -->
     <div id="result-screen" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 bg-slate-950 overflow-y-auto">
-        <div class="text-center w-full max-w-xl py-10 animate-in zoom-in duration-500">
-            <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl shadow-blue-900/20">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            </div>
-            
-            <h2 class="text-3xl font-black text-white mb-2 tracking-tight">Analisis Selesai</h2>
-            <p class="text-slate-400 mb-10 text-sm">Berikut adalah profil kepribadian Anda:</p>
+        <div class="text-center w-full max-w-2xl py-12">
+            <h2 class="text-4xl font-black text-white mb-2 tracking-tight">Analisis Profil</h2>
+            <p class="text-slate-500 mb-10 text-sm">Hasil simulasi gaya perilaku Anda:</p>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl">
-                    <p class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">D</p>
-                    <h3 id="score-D" class="text-3xl font-black text-white">0</h3>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+                    <p class="text-xs font-bold text-red-500 mb-1">D</p>
+                    <h3 id="score-D" class="text-4xl font-black">0</h3>
                 </div>
-                <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl">
-                    <p class="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mb-1">I</p>
-                    <h3 id="score-I" class="text-3xl font-black text-white">0</h3>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+                    <p class="text-xs font-bold text-yellow-500 mb-1">I</p>
+                    <h3 id="score-I" class="text-4xl font-black">0</h3>
                 </div>
-                <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl">
-                    <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">S</p>
-                    <h3 id="score-S" class="text-3xl font-black text-white">0</h3>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+                    <p class="text-xs font-bold text-emerald-500 mb-1">S</p>
+                    <h3 id="score-S" class="text-4xl font-black">0</h3>
                 </div>
-                <div class="bg-slate-900/50 border border-slate-800 p-4 rounded-3xl">
-                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">C</p>
-                    <h3 id="score-C" class="text-3xl font-black text-white">0</h3>
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+                    <p class="text-xs font-bold text-blue-500 mb-1">C</p>
+                    <h3 id="score-C" class="text-4xl font-black">0</h3>
                 </div>
             </div>
 
-            <!-- Bagian Kesimpulan Baru -->
-            <div class="bg-blue-900/20 border border-blue-800/50 p-6 rounded-[2rem] text-left mb-10">
-                <h4 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-3 flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Interpretasi Hasil
-                </h4>
-                <p id="conclusion-text" class="text-slate-200 text-sm leading-relaxed">Menganalisis data...</p>
+            <div class="bg-blue-900/20 border border-blue-800/50 p-8 rounded-[2.5rem] text-left mb-10">
+                <h4 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-4">Kesimpulan Dominan</h4>
+                <p id="conclusion-text" class="text-slate-200 text-sm leading-relaxed">Menganalisis perilaku...</p>
             </div>
 
             <div class="flex flex-col gap-3">
-                <button onclick="downloadPDF()" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    Simpan Laporan (PDF)
-                </button>
-                <a href="index.html" class="text-slate-500 font-bold text-sm uppercase tracking-widest py-3 hover:text-white transition">Kembali ke Beranda</a>
+                <button onclick="downloadPDF()" class="w-full py-5 bg-emerald-600 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-3">Unduh Laporan PDF</button>
+                <a href="index.html" class="text-slate-500 font-bold text-sm uppercase py-4">Beranda</a>
             </div>
         </div>
     </div>
@@ -116,98 +90,133 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", 
-            authDomain: "tilikpsikologi-cbt.firebaseapp.com", 
-            projectId: "tilikpsikologi-cbt", 
-            storageBucket: "tilikpsikologi-cbt.firebasestorage.app", 
-            messagingSenderId: "940142802410", 
-            appId: "1:940142802410:web:5e6579568ed2774d9a2e93" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", authDomain: "tilikpsikologi-cbt.firebaseapp.com", projectId: "tilikpsikologi-cbt", storageBucket: "tilikpsikologi-cbt.firebasestorage.app", messagingSenderId: "940142802410", appId: "1:940142802410:web:5e6579568ed2774d9a2e93" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         const questions = [
-            { options: [{t:"Tegas, berani mengambil risiko", c:"D"}, {t:"Suka meyakinkan orang lain", c:"I"}, {t:"Suka membantu & kooperatif", c:"S"}, {t:"Suka dengan data & ketelitian", c:"C"}] },
-            { options: [{t:"Berorientasi pada hasil akhir", c:"D"}, {t:"Optimis & penuh semangat", c:"I"}, {t:"Pendengar yang baik", c:"S"}, {t:"Sistematis & terencana", c:"C"}] },
-            { options: [{t:"Langsung pada intinya", c:"D"}, {t:"Suka menjadi pusat perhatian", c:"I"}, {t:"Menghindari konflik", c:"S"}, {t:"Berpikir sebelum bertindak", c:"C"}] },
-            { options: [{t:"Kompetitif", c:"D"}, {t:"Populer", c:"I"}, {t:"Sabar", c:"S"}, {t:"Sempurna", c:"C"}] },
-            { options: [{t:"Pembuat keputusan", c:"D"}, {t:"Pemberi inspirasi", c:"I"}, {t:"Penyelesai masalah", c:"S"}, {t:"Penganalisa", c:"C"}] }
+            { id: 1, opts: [{t:"Suka memulai percakapan & kenal orang baru", c:"I"}, {t:"Sangat menghargai ketelitian & data akurat", c:"C"}, {t:"Tenang & stabil di bawah tekanan", c:"S"}, {t:"Langsung ke inti masalah untuk solusi", c:"D"}] },
+            { id: 2, opts: [{t:"Pendengar yang sabar & suportif", c:"S"}, {t:"Mengutamakan logika & fakta daripada perasaan", c:"C"}, {t:"Bersemangat meyakinkan/motivasi orang lain", c:"I"}, {t:"Menantang diri dengan target kompetitif", c:"D"}] },
+            { id: 3, opts: [{t:"Senang berada di tim yang kooperatif", c:"S"}, {t:"Keputusan berdasarkan analisis mendalam", c:"C"}, {t:"Cepat bertindak & mendorong orang lain", c:"D"}, {t:"Antusias & penuh energi pada proyek baru", c:"I"}] },
+            { id: 4, opts: [{t:"Bertindak tegas & penuh keyakinan", c:"D"}, {t:"Lebih suka bekerja mandiri & fokus", c:"C"}, {t:"Mudah bergaul & suasana menyenangkan", c:"I"}, {t:"Menjaga harmoni & menghindari konflik", c:"S"}] },
+            { id: 5, opts: [{t:"Berusaha memenuhi standar kualitas tinggi", c:"C"}, {t:"Bisa beradaptasi dengan perubahan", c:"S"}, {t:"Memimpin percakapan & rapat dengan percaya diri", c:"D"}, {t:"Membangun hubungan baik dengan semua rekan", c:"I"}] },
+            { id: 6, opts: [{t:"Mendorong kolaborasi & kerja sama tim", c:"S"}, {t:"Fokus pada hasil akhir & target", c:"D"}, {t:"Optimis & melihat peluang di mana-mana", c:"I"}, {t:"Memastikan semua prosedur diikuti benar", c:"C"}] },
+            { id: 7, opts: [{t:"Berani mengambil risiko diperhitungkan", c:"D"}, {t:"Teliti dalam memeriksa detail kecil", c:"C"}, {t:"Stabil & konsisten dalam pendekatan kerja", c:"S"}, {t:"Inspiratif & bangkitkan semangat kelompok", c:"I"}] },
+            { id: 8, opts: [{t:"Memilih lingkungan kerja terprediksi", c:"S"}, {t:"Menyukai tantangan & persaingan sehat", c:"D"}, {t:"Ramah dan disukai banyak orang", c:"I"}, {t:"Skeptis sampai semua bukti terpenuhi", c:"C"}] },
+            { id: 9, opts: [{t:"Mengkritik diri untuk perbaikan terus-menerus", c:"C"}, {t:"Diplomatis & peka terhadap perasaan orang", c:"S"}, {t:"Punya karisma & kemampuan memengaruhi", c:"I"}, {t:"Mandiri & tidak mudah bergantung orang lain", c:"D"}] },
+            { id: 10, opts: [{t:"Menikmati jadi pusat perhatian kelompok", c:"I"}, {t:"Berhati-hati sebelum membuat komitmen", c:"C"}, {t:"Sabar & tidak terburu-buru menyelesaikan tugas", c:"S"}, {t:"Agresif dalam mencapai tujuan yang diinginkan", c:"D"}] },
+            { id: 11, opts: [{t:"Sosok yang menghibur & menyenangkan", c:"I"}, {t:"Tegas dan terkadang blak-blakan", c:"D"}, {t:"Mengutamakan rasa aman dan stabilitas", c:"S"}, {t:"Sangat sistematis & terorganisir", c:"C"}] },
+            { id: 12, opts: [{t:"Suka berdebat & memenangkan argumen", c:"D"}, {t:"Loyal & dukung atasan/tim tanpa protes", c:"S"}, {t:"Antusias dan punya banyak ide", c:"I"}, {t:"Bertindak berdasarkan pedoman & aturan", c:"C"}] },
+            { id: 13, opts: [{t:"Mudah berteman & perluas jaringan", c:"I"}, {t:"Percaya diri & yakin pada kemampuan sendiri", c:"D"}, {t:"Rendah hati dan tidak suka pamer", c:"S"}, {t:"Berorientasi pada detail dan presisi", c:"C"}] },
+            { id: 14, opts: [{t:"Mendahulukan kepentingan & perasaan orang", c:"S"}, {t:"Kompetitif dan ingin menjadi yang terbaik", c:"D"}, {t:"Logis, objektif, dan tidak emosional", c:"C"}, {t:"Spontan dan fleksibel dengan rencana", c:"I"}] },
+            { id: 15, opts: [{t:"Menuntut kinerja tinggi diri & orang lain", c:"D"}, {t:"Bisa menerima kritik & umpan balik baik", c:"S"}, {t:"Punya inisiatif tinggi & tidak suka menunggu", c:"D"}, {t:"Suka bercerita & menghidupkan suasana", c:"I"}] },
+            { id: 16, opts: [{t:"Mengontrol emosi baik dalam situasi sulit", c:"S"}, {t:"Murah hati dengan pujian untuk orang lain", c:"I"}, {t:"Analitis & suka mengurai masalah per bagian", c:"C"}, {t:"Ambisius & terus dorong batas kemampuan", c:"D"}] },
+            { id: 17, opts: [{t:"Pribadi menyenangkan & mudah diajak kerja sama", c:"I"}, {t:"Pemecah masalah yang langsung pada solusi", c:"D"}, {t:"Sangat berhati-hati & penuh pertimbangan", c:"C"}, {t:"Enerjik dan aktif secara fisik", c:"D"}] },
+            { id: 18, opts: [{t:"Bersikap sopan & menghormati otoritas", c:"S"}, {t:"Visioner & suka membayangkan masa depan", c:"I"}, {t:"Tidak ragu ambil kendali situasi kritis", c:"D"}, {t:"Mengerjakan tugas dengan metodis & rapi", c:"C"}] },
+            { id: 19, opts: [{t:"Mendengarkan dengan empati sebelum saran", c:"S"}, {t:"Mempertanyakan status quo cari cara terbaik", c:"D"}, {t:"Memastikan semua orang nyaman & diterima", c:"I"}, {t:"Mengikuti instruksi dengan tepat & konsisten", c:"C"}] },
+            { id: 20, opts: [{t:"Suka mencoba hal-hal baru dan berbeda", c:"I"}, {t:"Tenang dan tidak mudah terpancing emosi", c:"S"}, {t:"Punya standar etika profesional tinggi", c:"C"}, {t:"Persuasif & bisa 'menjual' ide dengan baik", c:"I"}] },
+            { id: 21, opts: [{t:"Berkomitmen pada deadline & janji", c:"C"}, {t:"Optimis segalanya akan berjalan baik", c:"I"}, {t:"Mendominasi pembicaraan diskusi kelompok", c:"D"}, {t:"Memeriksa ulang pekerjaan hindari salah", c:"C"}] },
+            { id: 22, opts: [{t:"Ceria dan punya semangat yang menular", c:"I"}, {t:"Mendorong perubahan dan inovasi", c:"D"}, {t:"Sabar mengerjakan tugas repetitif rutin", c:"S"}, {t:"Independen dan tidak suka diatur ketat", c:"D"}] },
+            { id: 23, opts: [{t:"Menghindari konfrontasi langsung", c:"S"}, {t:"Menikmati kesendirian berpikir mendalam", c:"C"}, {t:"Mengambil inisiatif memimpin proyek", c:"D"}, {t:"Suka bersosialisasi & acara networking", c:"I"}] },
+            { id: 24, opts: [{t:"Butuh data & bukti sebelum percaya", c:"C"}, {t:"Mudah beradaptasi keinginan orang lain", c:"S"}, {t:"Percaya diri mengambil keputusan penting", c:"D"}, {t:"Memotivasi tim dengan visi & antusiasme", c:"I"}] }
         ];
 
-        let currentQ = 0;
-        let scores = { D: 0, I: 0, S: 0, C: 0 };
-        let isFinished = false;
+        let currentGroupIdx = 0;
+        let selectedM = null;
+        let selectedT = null;
+        let finalScores = { D: 0, I: 0, S: 0, C: 0 };
 
-        function loadQuestion() {
-            if (currentQ >= questions.length) {
-                finishTest();
-                return;
-            }
-
-            const q = questions[currentQ];
-            document.getElementById('progress-text').innerText = `${currentQ + 1} / ${questions.length}`;
-            document.getElementById('progress-bar').style.width = `${((currentQ + 1) / questions.length) * 100}%`;
-
-            const grid = document.getElementById('options-grid');
-            grid.innerHTML = "";
+        function renderGroup() {
+            const group = questions[currentGroupIdx];
+            document.getElementById('progress-text').innerText = `Kelompok ${currentGroupIdx + 1} / 24`;
+            document.getElementById('progress-bar').style.width = `${((currentGroupIdx + 1) / 24) * 100}%`;
             
-            q.options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = "option-card w-full p-6 rounded-3xl text-left text-sm font-medium transition-all duration-300";
-                btn.innerText = opt.t;
-                btn.onclick = () => {
-                    scores[opt.c]++;
-                    currentQ++;
-                    loadQuestion();
-                };
-                grid.appendChild(btn);
+            const list = document.getElementById('options-list');
+            list.innerHTML = "";
+            
+            group.opts.forEach((opt, idx) => {
+                const row = document.createElement('div');
+                row.className = "grid grid-cols-12 gap-4 items-center bg-slate-900/40 p-4 rounded-2xl border border-slate-800";
+                
+                row.innerHTML = `
+                    <div class="col-span-8 text-sm font-medium text-slate-300">${opt.t}</div>
+                    <div class="col-span-2 flex justify-center">
+                        <button onclick="setM(${idx})" class="btn-m w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${selectedM === idx ? 'selected' : ''}">M</button>
+                    </div>
+                    <div class="col-span-2 flex justify-center">
+                        <button onclick="setT(${idx})" class="btn-t w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${selectedT === idx ? 'selected' : ''}">T</button>
+                    </div>
+                `;
+                list.appendChild(row);
             });
+            
+            checkValidity();
         }
 
+        window.setM = (idx) => {
+            if (selectedT === idx) selectedT = null;
+            selectedM = idx;
+            renderGroup();
+        };
+
+        window.setT = (idx) => {
+            if (selectedM === idx) selectedM = null;
+            selectedT = idx;
+            renderGroup();
+        };
+
+        function checkValidity() {
+            document.getElementById('next-btn').disabled = (selectedM === null || selectedT === null);
+        }
+
+        window.nextGroup = () => {
+            const group = questions[currentGroupIdx];
+            finalScores[group.opts[selectedM].c]++;
+            // (Metode skoring disederhanakan: M menambah skor dimensi tersebut)
+            
+            currentGroupIdx++;
+            selectedM = null;
+            selectedT = null;
+            
+            if (currentGroupIdx < 24) {
+                renderGroup();
+            } else {
+                finishTest();
+            }
+        };
+
         function getConclusion() {
-            const maxScore = Math.max(scores.D, scores.I, scores.S, scores.C);
-            const primaries = Object.keys(scores).filter(key => scores[key] === maxScore);
-            const primary = primaries[0];
-
-            const interpretations = {
-                D: "Berdasarkan hasil asesmen, Anda memiliki profil 'Dominance' yang menonjol. Anda adalah pribadi yang sangat berorientasi pada hasil, tegas, dan menyukai tantangan. Anda cenderung memecahkan masalah dengan cepat dan berani mengambil risiko untuk mencapai tujuan.",
-                I: "Berdasarkan hasil asesmen, Anda memiliki profil 'Influence' yang menonjol. Anda adalah pribadi yang antusias, komunikatif, dan persuasif. Anda sangat pandai membangun jaringan sosial, memotivasi orang lain, dan menyukai lingkungan kerja yang penuh interaksi.",
-                S: "Berdasarkan hasil asesmen, Anda memiliki profil 'Steadiness' yang menonjol. Anda adalah pribadi yang sabar, setia, dan pendengar yang baik. Anda cenderung menyukai harmoni dalam lingkungan kerja, dapat diandalkan dalam tim, dan sangat menghargai stabilitas.",
-                C: "Berdasarkan hasil asesmen, Anda memiliki profil 'Compliance' yang menonjol. Anda adalah pribadi yang teliti, logis, dan sangat memperhatikan detail. Anda bekerja secara sistematis, menjunjung tinggi standar kualitas, dan lebih memilih keputusan berbasis data."
+            const maxVal = Math.max(finalScores.D, finalScores.I, finalScores.S, finalScores.C);
+            const primary = Object.keys(finalScores).find(key => finalScores[key] === maxVal);
+            
+            const texts = {
+                D: "Anda memiliki gaya Dominan yang kuat. Anda adalah pribadi yang fokus pada hasil, tegas, dan menyukai tantangan langsung. Anda cenderung memimpin dengan visi yang jelas dan berani mengambil risiko.",
+                I: "Anda memiliki gaya Influencing yang menonjol. Anda adalah pribadi yang antusias, komunikatif, dan persuasif. Anda sangat pandai membangun jaringan sosial dan memotivasi orang lain di sekitar Anda.",
+                S: "Anda memiliki gaya Steadiness yang dominan. Anda adalah pribadi yang sabar, stabil, dan pendengar yang baik. Anda menghargai harmoni tim, setia, dan dapat diandalkan dalam menjaga konsistensi kerja.",
+                C: "Anda memiliki gaya Compliance yang kuat. Anda adalah pribadi yang teliti, analitis, dan sangat memperhatikan detail. Anda bekerja secara sistematis dan menjunjung tinggi standar kualitas serta akurasi."
             };
-
-            return interpretations[primary] || "Profil Anda menunjukkan keseimbangan di beberapa dimensi perilaku.";
+            return texts[primary] || "Profil Anda menunjukkan keseimbangan di beberapa dimensi perilaku.";
         }
 
         async function finishTest() {
-            if (isFinished) return;
-            isFinished = true;
-
-            const nama = localStorage.getItem("nama_peserta") || "Peserta Anonim";
-            const resultString = `D:${scores.D}, I:${scores.I}, S:${scores.S}, C:${scores.C}`;
+            const nama = localStorage.getItem("nama_peserta") || "Peserta";
             const conclusion = getConclusion();
+            const resultStr = `D:${finalScores.D}, I:${finalScores.I}, S:${finalScores.S}, C:${finalScores.C}`;
             
             try {
                 await addDoc(collection(db, "hasil_tes"), {
-                    nama: nama,
-                    tes: "DISC",
-                    skor: resultString,
-                    waktu: new Date().toLocaleString('id-ID')
+                    nama, tes: "DISC", skor: resultStr, waktu: new Date().toLocaleString('id-ID')
                 });
-            } catch (err) {
-                console.error("Firebase Error:", err);
-            }
+            } catch (err) { console.error(err); }
 
             document.getElementById('test-header').classList.add('hidden');
             document.getElementById('test-container').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-
-            document.getElementById('score-D').innerText = scores.D;
-            document.getElementById('score-I').innerText = scores.I;
-            document.getElementById('score-S').innerText = scores.S;
-            document.getElementById('score-C').innerText = scores.C;
+            
+            document.getElementById('score-D').innerText = finalScores.D;
+            document.getElementById('score-I').innerText = finalScores.I;
+            document.getElementById('score-S').innerText = finalScores.S;
+            document.getElementById('score-C').innerText = finalScores.C;
             document.getElementById('conclusion-text').innerText = conclusion;
         }
 
@@ -215,62 +224,56 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const nama = localStorage.getItem("nama_peserta") || "Peserta";
-            const tanggal = new Date().toLocaleString('id-ID');
             const conclusion = getConclusion();
 
             doc.setFont("helvetica", "bold");
             doc.setFontSize(22);
             doc.setTextColor(30, 64, 175);
-            doc.text("HASIL PROFIL KEPRIBADIAN DISC", 20, 30);
+            doc.text("LAPORAN SIMULASI GAYA PERILAKU (DISC)", 20, 30);
             
             doc.setFontSize(14);
-            doc.setTextColor(100, 100, 100);
+            doc.setTextColor(0,0,0);
             doc.text("Tilik Psikologi - Digital Assessment Center", 20, 40);
-            
-            doc.setLineWidth(0.5);
-            doc.setDrawColor(30, 64, 175);
             doc.line(20, 45, 190, 45);
 
             doc.setFontSize(11);
-            doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "normal");
-            doc.text(`Nama Peserta    : ${nama}`, 20, 60);
-            doc.text(`Tanggal Asesmen : ${tanggal}`, 20, 68);
-            doc.text(`Kategori Tes    : Simulasi DISC Personality`, 20, 76);
+            doc.text(`Nama Peserta : ${nama}`, 20, 60);
+            doc.text(`Jenis Tes     : DISC Personality Profile (Simulasi)`, 20, 70);
 
-            doc.setFillColor(248, 250, 252);
-            doc.rect(20, 90, 170, 45, 'F');
             doc.setFont("helvetica", "bold");
-            doc.text("Ringkasan Skor:", 30, 100);
+            doc.text("DISTRIBUSI SKOR (M):", 20, 90);
+            doc.text(`D (Dominance) : ${finalScores.D}`, 30, 100);
+            doc.text(`I (Influence) : ${finalScores.I}`, 30, 110);
+            doc.text(`S (Steadiness): ${finalScores.S}`, 30, 120);
+            doc.text(`C (Compliance): ${finalScores.C}`, 30, 130);
+
+            doc.text("INTERPRETASI DOMINAN:", 20, 150);
+            doc.setFont("helvetica", "normal");
+            const splitInterp = doc.splitTextToSize(conclusion, 170);
+            doc.text(splitInterp, 20, 158);
+
+            // DISCLAIMER BOX - MANDATORY
+            doc.setDrawColor(220, 0, 0);
+            doc.setLineWidth(1);
+            doc.rect(15, 210, 180, 45);
             
-            doc.setFont("helvetica", "normal");
-            doc.text(`Dominance (D)  : ${scores.D}`, 35, 110);
-            doc.text(`Influence (I)  : ${scores.I}`, 35, 118);
-            doc.text(`Steadiness (S) : ${scores.S}`, 35, 126);
-            doc.text(`Compliance (C) : ${scores.C}`, 35, 134);
-
             doc.setFont("helvetica", "bold");
-            doc.text("Interpretasi Hasil:", 20, 155);
-            doc.setFont("helvetica", "normal");
-            const splitConclusion = doc.splitTextToSize(conclusion, 170);
-            doc.text(splitConclusion, 20, 162);
-
-            doc.setDrawColor(220, 220, 220);
-            doc.line(20, 250, 190, 250);
+            doc.setFontSize(10);
+            doc.setTextColor(200, 0, 0);
+            doc.text("DISCLAIMER (WAJIB DICANTUMKAN):", 20, 220);
             
             doc.setFont("helvetica", "italic");
-            doc.setFontSize(9);
-            doc.setTextColor(120, 120, 120);
-            
-            const disclaimerText = "Catatan: Hasil ini bersifat simulasi untuk kepentingan akademik dan simulasi mandiri. Jika Anda membutuhkan asesmen psikologi yang valid untuk keperluan profesional, kami sarankan untuk menghubungi psikolog atau konsultan SDM terpercaya.";
-            
-            const splitDisclaimer = doc.splitTextToSize(disclaimerText, 170);
-            doc.text(splitDisclaimer, 20, 260);
+            doc.setFontSize(8);
+            doc.setTextColor(0, 0, 0);
+            const discText = "Simulasi ini hanya untuk tujuan edukasi dan pengenalan diri awal. Pernyataan dan metode skoring ini disederhanakan dan TIDAK SAMA dengan instrumen DISC yang valid dan bersertifikasi. Hasilnya tidak dapat dijadikan dasar untuk asesmen psikologis, seleksi karyawan, atau pengambilan keputusan penting. Untuk analisis yang akurat, konsultasikan dengan psikolog atau konsultan SDM bersertifikasi.";
+            const splitDisc = doc.splitTextToSize(discText, 170);
+            doc.text(splitDisc, 20, 228);
 
-            doc.save(`Hasil_DISC_TilikPsikologi_${nama}.pdf`);
+            doc.save(`Hasil_DISC_Tilik_${nama}.pdf`);
         };
 
-        loadQuestion();
+        renderGroup();
     </script>
 </body>
 </html>
