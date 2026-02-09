@@ -28,9 +28,11 @@
             </div>
             <h2 class="text-2xl font-black text-slate-900 mb-2">Admin Login</h2>
             <p class="text-slate-500 text-sm mb-8">Masukkan password untuk melihat hasil data peserta.</p>
-            <input type="password" id="adminPassword" placeholder="Password" class="w-full px-6 py-4 rounded-2xl border-2 border-slate-100 focus:border-blue-500 outline-none mb-4 text-center font-bold tracking-widest">
-            <button onclick="checkAdminPassword()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-xl shadow-blue-200">Masuk ke Panel</button>
-            <p id="login-error" class="text-red-500 text-xs mt-4 font-bold hidden">Password salah!</p>
+            <input type="password" id="adminPassword" placeholder="Password" 
+                class="w-full px-6 py-4 rounded-2xl border-2 border-slate-100 focus:border-blue-500 outline-none mb-4 text-center font-bold tracking-widest"
+                onkeypress="handleKeyPress(event)">
+            <button onclick="checkAdminPassword()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-blue-700 shadow-xl shadow-blue-200 transition-all">Masuk ke Panel</button>
+            <p id="login-error" class="text-red-500 text-xs mt-4 font-bold hidden">Password salah atau terjadi kendala!</p>
         </div>
     </div>
 
@@ -44,7 +46,8 @@
                 </div>
                 <div class="flex gap-2 w-full md:w-auto">
                     <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari nama..." class="w-full md:w-64 px-4 py-2 rounded-xl border border-slate-300 outline-none text-sm">
-                    <button onclick="exportCSV()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg">Export CSV</button>
+                    <button onclick="exportCSV()" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg hover:bg-blue-700 transition">Export CSV</button>
+                    <button onclick="location.reload()" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-slate-300 transition">Keluar</button>
                 </div>
             </div>
 
@@ -74,7 +77,8 @@
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Konfigurasi menggunakan variabel lingkungan
+        const SECRET_PASSWORD = "admin123"; 
+
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : { 
             apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", 
             authDomain: "tilikpsikologi-cbt.firebaseapp.com", 
@@ -89,36 +93,42 @@
         const auth = getAuth(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'tilik-psikologi-prod';
 
-        const SECRET_PASSWORD = "admin123"; 
+        window.handleKeyPress = (event) => {
+            if (event.key === "Enter") {
+                checkAdminPassword();
+            }
+        };
 
         window.checkAdminPassword = () => {
-            if (document.getElementById('adminPassword').value === SECRET_PASSWORD) {
+            const inputPass = document.getElementById('adminPassword').value.trim();
+            if (inputPass === SECRET_PASSWORD) {
                 document.getElementById('login-overlay').classList.add('hidden');
                 document.getElementById('admin-content').classList.remove('hidden');
                 initAuth();
             } else {
-                document.getElementById('login-error').classList.remove('hidden');
-                setTimeout(() => document.getElementById('login-error').classList.add('hidden'), 3000);
+                const errEl = document.getElementById('login-error');
+                errEl.innerText = "Password salah! Silakan coba lagi.";
+                errEl.classList.remove('hidden');
+                setTimeout(() => errEl.classList.add('hidden'), 3000);
             }
         };
 
         const initAuth = async () => {
-            // Perbaikan logika: Mencoba Custom Token terlebih dahulu, jika gagal atau tidak ada, masuk anonim.
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     try {
                         await signInWithCustomToken(auth, __initial_auth_token);
-                        console.log("Signed in with custom token");
                     } catch (e) {
-                        console.log("Custom token failed, falling back to anonymous...");
                         await signInAnonymously(auth);
                     }
                 } else {
                     await signInAnonymously(auth);
-                    console.log("Signed in anonymously");
                 }
             } catch (err) { 
                 console.error("Auth error:", err); 
+                const errEl = document.getElementById('login-error');
+                errEl.innerText = "Gagal menghubungkan ke server.";
+                errEl.classList.remove('hidden');
             }
         };
 
@@ -127,7 +137,6 @@
         });
 
         function loadData() {
-            // Path koleksi sesuai Rule 1
             const resultsCol = collection(db, 'artifacts', appId, 'public', 'data', 'hasil_tes');
             
             onSnapshot(resultsCol, (snapshot) => {
@@ -136,7 +145,6 @@
                 let dataList = [];
                 snapshot.forEach((doc) => dataList.push(doc.data()));
                 
-                // Sorting dilakukan di JavaScript memori (Rule 2)
                 dataList.sort((a, b) => {
                     const dateA = new Date(a.waktu.split(', ').reverse().join(' '));
                     const dateB = new Date(b.waktu.split(', ').reverse().join(' '));
