@@ -3,79 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pilih Asesmen | Tilik Psikologi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Pilih Tes | Tilik Psikologi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Poppins', sans-serif; }
-        .test-card:hover { transform: translateY(-8px); }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .test-card {
+            background: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #e2e8f0;
+        }
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+            border-color: #3b82f6;
+        }
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body class="min-h-screen p-6 md:p-12">
 
-    <nav class="bg-white border-b border-slate-100 py-6 sticky top-0 z-50">
-        <div class="container mx-auto px-6 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">T</div>
-                <span class="text-xl font-bold tracking-tight text-blue-900">Tilik<span class="text-blue-500">Psikologi</span></span>
+    <div class="max-w-5xl mx-auto fade-in">
+        <header class="flex justify-between items-center mb-12">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900 leading-tight">Halo, <span id="user-name" class="text-blue-600">Peserta</span>!</h1>
+                <p class="text-slate-500 text-sm font-medium mt-1">Silakan pilih simulasi tes yang ingin Anda kerjakan.</p>
             </div>
-            <span class="text-xs font-medium text-slate-400">Digital Assessment Center</span>
-        </div>
-    </nav>
-
-    <main class="container mx-auto py-16 px-6 flex-grow">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-16">
-                <h1 class="text-3xl font-bold text-blue-900 mb-3">Selamat Datang</h1>
-                <p class="text-slate-500">Silakan pilih salah satu Simulasi alat tes di bawah ini untuk memulai pengerjaan.</p>
+            <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 font-bold">
+                <span id="user-initial">P</span>
             </div>
+        </header>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
-                    <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes WPT</h3>
-                    <p class="text-sm text-slate-400 mb-8 flex-grow">Simulasi Uji kognitif untuk mengukur kemampuan logika, verbal, dan numerik secara cepat.</p>
-                    <a href="wpt.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Tes DISC -->
+            <a href="disc.html" class="test-card p-8 rounded-[2.5rem] flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Tes DISC</h3>
+                <p class="text-slate-500 text-xs leading-relaxed mb-6">Analisis gaya perilaku dan kepribadian dalam lingkungan profesional.</p>
+                <span class="text-xs font-black text-blue-600 uppercase tracking-widest">Mulai Tes &rarr;</span>
+            </a>
 
-                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
-                    <div class="w-14 h-14 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes DISC</h3>
-                    <p class="text-sm text-slate-400 mb-8 flex-grow">Simulasi Analisis gaya kepribadian untuk memahami perilaku dalam situasi kerja dan sosial.</p>
-                    <a href="disc.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+            <!-- Tes WPT -->
+            <a href="wpt.html" class="test-card p-8 rounded-[2.5rem] flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-3xl flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Tes WPT</h3>
+                <p class="text-slate-500 text-xs leading-relaxed mb-6">Evaluasi kemampuan kognitif dan penyelesaian masalah cepat.</p>
+                <span class="text-xs font-black text-blue-600 uppercase tracking-widest">Mulai Tes &rarr;</span>
+            </a>
 
-                <div class="test-card bg-white p-8 rounded-3xl shadow-sm border border-slate-100 transition-all duration-300 flex flex-col">
-                    <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                    </div>
-                    <h3 class="font-bold text-xl mb-2 text-blue-900">Tes Kraepelin</h3>
-                    <p class="text-sm text-slate-400 mb-8 flex-grow">Simulasi Mengukur ketahanan kerja, ketelitian, serta konsentrasi melalui penjumlahan angka.</p>
-                    <a href="kraepelin.html" class="w-full text-center bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">Mulai Tes</a>
+            <!-- Tes Kraepelin -->
+            <a href="kraepelin.html" class="test-card p-8 rounded-[2.5rem] flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-3xl flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
                 </div>
+                <h3 class="text-xl font-bold text-slate-900 mb-2">Tes Kraepelin</h3>
+                <p class="text-slate-500 text-xs leading-relaxed mb-6">Mengukur ketelitian, kecepatan, dan daya tahan kerja Anda.</p>
+                <span class="text-xs font-black text-blue-600 uppercase tracking-widest">Mulai Tes &rarr;</span>
+            </a>
 
-            </div>
         </div>
-    </main>
 
-    <footer class="bg-white border-t border-slate-100 py-10">
-        <div class="container mx-auto px-6 text-center">
-            <p class="text-xs text-slate-400 uppercase tracking-widest font-semibold">Website Simulasi Psikotes-Tilik Psikologi</p>
-        </div>
-    </footer>
+        <footer class="mt-20 border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest">&copy; 2026 Tilik Psikologi</p>
+            <button onclick="logout()" class="text-red-500 text-[10px] font-black uppercase tracking-widest hover:underline">Keluar / Reset Data</button>
+        </footer>
+    </div>
 
+    <script>
+        window.onload = function() {
+            const nama = localStorage.getItem('nama_peserta') || "Peserta";
+            document.getElementById('user-name').innerText = nama;
+            document.getElementById('user-initial').innerText = nama.charAt(0).toUpperCase();
+        };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+    </script>
 </body>
 </html>
-
-
