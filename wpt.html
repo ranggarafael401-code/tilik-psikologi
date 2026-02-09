@@ -5,51 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tes WPT | Tilik Psikologi</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Mencegah seleksi teks agar soal tidak bisa di-copy */
-        body {
-            user-select: none;
-            -webkit-user-select: none;
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Poppins', sans-serif; user-select: none; }</style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body class="bg-slate-50 text-slate-900">
 
-    <div id="start-screen" class="min-h-screen flex items-center justify-center p-6 text-center">
-        <div class="bg-white max-w-md p-8 rounded-3xl shadow-xl border">
-            <h2 class="text-2xl font-bold text-red-600 mb-4">Perhatian Keamanan!</h2>
-            <p class="text-slate-600 mb-6 text-sm">
-                Tes ini akan berjalan dalam mode **Layar Penuh**. Selama tes berlangsung, Anda **DILARANG**:
-            </p>
-            <ul class="text-left text-xs text-slate-500 space-y-2 mb-8 bg-slate-50 p-4 rounded-xl">
-                <li>• Berpindah tab atau membuka aplikasi lain.</li>
-                <li>• Menekan tombol keluar atau minimize.</li>
-                <li>• Mengambil screenshot atau menyalin teks.</li>
-            </ul>
-            <p class="text-xs font-bold text-red-500 mb-6">Jika Anda melanggar lebih dari 2 kali, sistem akan mengirimkan jawaban secara otomatis.</p>
-            <button onclick="mulaiTesWPT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition">
-                Saya Mengerti & Mulai
-            </button>
+    <div id="start-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="bg-white max-w-md w-full p-8 rounded-3xl shadow-xl border text-center">
+            <h2 class="text-2xl font-bold text-blue-900 mb-4">Instruksi Tes WPT</h2>
+            <p class="text-slate-600 text-sm mb-6 text-left">Tes ini terdiri dari soal logika dan pengetahuan umum. Selama tes, Anda <b>DILARANG</b> berpindah tab atau keluar dari mode Fullscreen. Pelanggaran berulang akan membuat tes berhenti otomatis.</p>
+            <button onclick="startWPT()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold">Mulai Tes (Fullscreen)</button>
         </div>
     </div>
 
-    <div id="test-content" class="hidden min-h-screen p-6">
-        <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-xl font-bold text-blue-900 uppercase">Tes WPT</h1>
-                <div id="timer" class="text-red-600 font-black text-xl">12:00</div>
+    <div id="test-content" class="hidden min-h-screen py-10 px-6">
+        <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-sm border">
+            <div class="flex justify-between mb-6">
+                <span class="font-bold text-blue-900">WPT Assessment</span>
+                <span id="timer" class="text-red-600 font-bold italic">12:00</span>
             </div>
-            
-            <div id="quiz-container">
-                <p class="mb-6 font-medium">1. Manakah dari kata-kata berikut yang paling tidak menyerupai kata lainnya?</p>
-                <div class="space-y-3">
-                    <label class="block p-4 border rounded-xl hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="0"> Jeruk</label>
-                    <label class="block p-4 border rounded-xl hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="0"> Apel</label>
-                    <label class="block p-4 border rounded-xl hover:bg-slate-50 cursor-pointer"><input type="radio" name="q1" value="1"> Wortel</label>
+            <div id="soal-container">
+                <p class="mb-4">1. Lawan kata dari "CEPAT" adalah...</p>
+                <div class="space-y-2">
+                    <label class="block p-3 border rounded-xl"><input type="radio" name="q1" value="Lambat"> Lambat</label>
+                    <label class="block p-3 border rounded-xl"><input type="radio" name="q1" value="Tangkas"> Tangkas</label>
+                    <label class="block p-3 border rounded-xl"><input type="radio" name="q1" value="Gesit"> Gesit</label>
                 </div>
             </div>
+            <button onclick="submitWPT()" class="w-full bg-blue-900 text-white py-4 rounded-2xl font-bold mt-10">Kirim Jawaban</button>
+        </div>
+    </div>
 
-            <button onclick="kirimHasilWPT()" class="mt-10 w-full bg-blue-900 text-white py-4 rounded-2xl font-bold">Kirim Jawaban</button>
+    <div id="result-screen" class="hidden min-h-screen flex items-center justify-center p-6 text-center">
+        <div class="bg-white max-w-md w-full p-8 rounded-3xl shadow-2xl border">
+            <h2 class="text-2xl font-bold text-blue-900 mb-6">Tes Selesai!</h2>
+            <div class="bg-blue-50 p-6 rounded-2xl mb-8">
+                <p class="text-xs text-blue-600 font-bold uppercase mb-2">Skor Kognitif Anda</p>
+                <h3 id="final-skor" class="text-5xl font-black text-blue-900">0</h3>
+            </div>
+            <button onclick="downloadPDF('WPT')" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold mb-4">Unduh Hasil PDF</button>
+            <a href="index.html" class="text-sm text-slate-400">Kembali ke Beranda</a>
         </div>
     </div>
 
@@ -57,61 +53,44 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA",
-            authDomain: "tilikpsikologi-cbt.firebaseapp.com",
-            projectId: "tilikpsikologi-cbt",
-            storageBucket: "tilikpsikologi-cbt.firebasestorage.app",
-            messagingSenderId: "940142802410",
-            appId: "1:940142802410:web:5e6579568ed2774d9a2e93"
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyBZsXx_T5-5bKp14BLhuZGNfj4Ils71nVA", authDomain: "tilikpsikologi-cbt.firebaseapp.com", projectId: "tilikpsikologi-cbt", storageBucket: "tilikpsikologi-cbt.firebasestorage.app", messagingSenderId: "940142802410", appId: "1:940142802410:web:5e6579568ed2774d9a2e93" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let warningCount = 0;
+        let warnings = 0;
+        let userData = { nama: localStorage.getItem("nama_peserta") || "Peserta", skor: 0, waktu: "" };
 
-        // Fungsi Masuk Fullscreen
-        window.mulaiTesWPT = () => {
-            const elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen(); }
+        window.startWPT = () => {
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('test-content').classList.remove('hidden');
         };
 
-        // Deteksi Pindah Tab / Minimize
         document.addEventListener("visibilitychange", () => {
-            if (document.hidden) {
-                warningCount++;
-                if (warningCount >= 3) {
-                    alert("Pelanggaran Keamanan: Anda terlalu sering meninggalkan halaman! Jawaban dikirim otomatis.");
-                    kirimHasilWPT("Diskualifikasi (Pindah Tab)");
-                } else {
-                    alert(`Peringatan ${warningCount}: Jangan pindah tab atau membuka aplikasi lain selama tes!`);
-                }
+            if (document.hidden && !document.getElementById('test-content').classList.contains('hidden')) {
+                warnings++;
+                if (warnings >= 3) { alert("Diskualifikasi! Anda terlalu banyak pindah tab."); submitWPT("Pelanggaran Keamanan"); }
+                else alert(`Peringatan ${warnings}: Jangan pindah tab!`);
             }
         });
 
-        // Deteksi Kehilangan Fokus Window
-        window.addEventListener("blur", () => {
-            console.log("Browser kehilangan fokus");
-        });
+        window.submitWPT = async (status = null) => {
+            userData.skor = status || "25"; // Ganti dengan logika skor
+            userData.waktu = new Date().toLocaleString("id-ID");
+            await addDoc(collection(db, "hasil_tes"), { nama: userData.nama, tes: "WPT", skor: userData.skor, waktu: userData.waktu });
+            if (document.fullscreenElement) document.exitFullscreen();
+            document.getElementById('test-content').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-skor').innerText = userData.skor;
+        };
 
-        // Fungsi Kirim Hasil
-        window.kirimHasilWPT = async (statusOverride = null) => {
-            const nama = localStorage.getItem("nama_peserta") || "Anonim";
-            try {
-                await addDoc(collection(db, "hasil_tes"), {
-                    nama: nama,
-                    tes: "WPT",
-                    skor: statusOverride ? statusOverride : "50", // Ganti dengan logika skor asli
-                    waktu: new Date().toLocaleString("id-ID")
-                });
-                if (document.fullscreenElement) { document.exitFullscreen(); }
-                window.location.href = "index.html";
-            } catch (e) {
-                alert("Koneksi bermasalah.");
-            }
+        window.downloadPDF = (tes) => {
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.text(`HASIL TES ${tes}`, 105, 20, { align: "center" });
+            doc.text(`Nama: ${userData.nama}`, 20, 40);
+            doc.text(`Skor: ${userData.skor}`, 20, 50);
+            doc.text(`Waktu: ${userData.waktu}`, 20, 60);
+            doc.save(`Hasil_${tes}_${userData.nama}.pdf`);
         };
     </script>
 </body>
